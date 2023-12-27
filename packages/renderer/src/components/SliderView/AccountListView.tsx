@@ -30,7 +30,7 @@ export default defineComponent({
     }>({
       waClient: [
         {
-          robot: false,
+          isRobot: false,
           persistId: 'kasdjlasdajdl',
           delete: false,
           name: 'Rizky',
@@ -60,13 +60,13 @@ export default defineComponent({
               )}
               <div
                 class={`w-12 rounded-full hover:ring hover:ring-primary ${
-                  item.persistId === store.currentWaAccount
+                  item.persistId === store.currentWaAccountPersistId
                     ? 'ring ring-primary ring-offset-base-100 ring-offset-2'
                     : ''
                 }`}
                 onClick={e => {
                   e.stopPropagation();
-                  store.setCurrentWaAccount(item.persistId);
+                  store.setCurrentWaAccountPersistId(item.persistId);
                 }}
               >
                 {!item.delete ? (

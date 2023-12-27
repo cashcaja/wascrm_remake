@@ -1,4 +1,5 @@
 import {type BrowserWindow, ipcMain, shell} from 'electron';
+import {addAccount} from '/@/utils';
 
 const listenOpenExternal = () => {
   // restore browser view with persist
@@ -7,7 +8,13 @@ const listenOpenExternal = () => {
   });
 };
 
+const listenAddAccount = (window: BrowserWindow) => {
+  ipcMain.handle('add-account', (_, opt) => {
+    addAccount(window, opt);
+  });
+};
+
 export default (window: BrowserWindow) => {
-  console.log(window);
   listenOpenExternal();
+  listenAddAccount(window);
 };

@@ -66,24 +66,10 @@ export const loadTokens = async (win: BrowserWindow, callbackURL: string) => {
     const response = await axios(options);
 
     const token = response.data?.access_token;
-
     const userInfo = jwtDecode(response.data?.id_token);
-    store.set('userInfo', userInfo);
+    store.set('userInfo', {...userInfo, token});
     // send userInfo to front end
     win.webContents.send('save-user-info-to-front', {...userInfo, token});
-
-    // TODO delete this testing auth api
-    // try {
-    //   await axios({
-    //     method: 'GET',
-    //     url: 'http://auth0-test.wuli.cash:28090/',
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   });
-    // } catch (e) {
-    //   console.log(e);
-    // }
 
     refreshToken = response.data.refresh_token;
 

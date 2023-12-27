@@ -15,11 +15,9 @@ export const useAppStore = defineStore('app', () => {
   const token = ref<string>('');
   const userInfo = ref<Partial<UserInfo>>({});
   const role = ref<string>('');
-
   // current waAccount
-  const currentWaAccount = ref<string>('');
-
-
+  const currentWaAccountPersistId = ref<string>('');
+  const waAccountList = ref<WaClient[]>([]);
 
   const setUserInfo = (info: Partial<UserInfo>) => {
     userInfo.value = info;
@@ -27,16 +25,22 @@ export const useAppStore = defineStore('app', () => {
     role.value = info['https://ai-assist-test-us.wuli.cash/roles']?.[0] || '';
   };
 
-  const setCurrentWaAccount = (persistId: string) => {
-    currentWaAccount.value = persistId;
+  const setCurrentWaAccountPersistId = (persistId: string) => {
+    currentWaAccountPersistId.value = persistId;
+  };
+
+  const setWaAccountList = (list: WaClient[]) => {
+    waAccountList.value = list;
   };
 
   return {
     token,
     userInfo,
     role,
+    waAccountList,
+    currentWaAccountPersistId,
     setUserInfo,
-    currentWaAccount,
-    setCurrentWaAccount,
+    setCurrentWaAccountPersistId,
+    setWaAccountList,
   };
 });

@@ -12,8 +12,8 @@ export const openExternal = (url: string) => {
   ipcRenderer.send('open-external', url);
 };
 
-export const getWaClient = (cb: (params: any) => void) => {
-  ipcRenderer.on('get-wa-client', (_, arg) => {
+export const getAccountList = (cb: (params: any) => void) => {
+  ipcRenderer.on('send-accountList', (_, arg) => {
     cb(arg);
   });
 };
