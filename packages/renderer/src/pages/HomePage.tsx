@@ -1,6 +1,6 @@
 import {defineComponent} from 'vue';
 import {useAppStore} from '/@/store';
-import Slider from '/@/components/Slider';
+import SliderView from '/@/components/SliderView';
 
 export default defineComponent({
   setup() {
@@ -9,7 +9,7 @@ export default defineComponent({
 
     return () => (
       <div class="flex flex-row m-0 p-0">
-        <Slider />
+        <SliderView />
         <div class="w-[calc(100%-560px)] flex flex-col bg-[red]"></div>
         <div class="w-[470px] h-[100vh] bg-[green]"></div>
       </div>

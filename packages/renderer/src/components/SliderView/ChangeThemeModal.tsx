@@ -1,51 +1,62 @@
-import {defineComponent, defineProps} from 'vue';
+import {defineComponent} from 'vue';
 import {onMounted} from 'vue';
 import {themeChange} from 'theme-change';
+import {vi} from 'vitest';
+import {isBoolean} from 'lodash';
+
+const themes: string[] = [
+  'light',
+  'dark',
+  'cupcake',
+  'bumblebee',
+  'emerald',
+  'corporate',
+  'synthwave',
+  'retro',
+  'cyberpunk',
+  'valentine',
+  'halloween',
+  'garden',
+  'forest',
+  'aqua',
+  'lofi',
+  'pastel',
+  'fantasy',
+  'wireframe',
+  'black',
+  'luxury',
+  'dracula',
+  'cmyk',
+  'autumn',
+  'business',
+  'acid',
+  'lemonade',
+  'night',
+  'coffee',
+  'winter',
+  'dim',
+  'nord',
+  'sunset',
+];
 
 export default defineComponent({
-  setup() {
-    const props = defineProps({
-      visible: {type: Boolean, default: false, required: true},
-      closeModal: {type: Function, required: true},
-    });
-
+  name: 'ChangeThemeModal',
+  props: {
+    visible: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
+    closeModal: {
+      type: Function,
+      default: () => {},
+      required: true,
+    },
+  },
+  setup(props) {
     onMounted(() => {
       themeChange(false);
     });
-    const themes: string[] = [
-      'light',
-      'dark',
-      'cupcake',
-      'bumblebee',
-      'emerald',
-      'corporate',
-      'synthwave',
-      'retro',
-      'cyberpunk',
-      'valentine',
-      'halloween',
-      'garden',
-      'forest',
-      'aqua',
-      'lofi',
-      'pastel',
-      'fantasy',
-      'wireframe',
-      'black',
-      'luxury',
-      'dracula',
-      'cmyk',
-      'autumn',
-      'business',
-      'acid',
-      'lemonade',
-      'night',
-      'coffee',
-      'winter',
-      'dim',
-      'nord',
-      'sunset',
-    ];
 
     return () => (
       <dialog
@@ -57,7 +68,7 @@ export default defineComponent({
           <h3 class="font-bold text-lg">Change Theme</h3>
           <select
             data-choose-theme
-            class="mt-[20px] select select-bordered select-sm w-full max-w-xs"
+            class="mt-[20px] select select-bordered select-sm w-full max-w-xs ml-[80px]"
           >
             {themes.map((value, index) => {
               return (
