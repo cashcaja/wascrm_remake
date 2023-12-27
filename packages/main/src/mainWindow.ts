@@ -1,8 +1,15 @@
-import {app, BrowserWindow} from 'electron';
+import {app, BrowserWindow, Menu, nativeImage, Tray} from 'electron';
 import {join, resolve} from 'node:path';
+import icon from '/@/assets/logo.png';
+import trayIcon from '/@/assets/tray.png';
+import listenAction from '/@/action';
+import {loadTokens} from '/@/utils/auth';
 
 async function createWindow() {
   const browserWindow = new BrowserWindow({
+    icon: nativeImage.createFromDataURL(icon),
+    width: 1680,
+    height: 800,
     show: false, // Use the 'ready-to-show' event to show the instantiated BrowserWindow.
     webPreferences: {
       nodeIntegration: false,
@@ -13,14 +20,6 @@ async function createWindow() {
     },
   });
 
-  /**
-   * If the 'show' property of the BrowserWindow's constructor is omitted from the initialization options,
-   * it then defaults to 'true'. This can cause flickering as the window loads the html content,
-   * and it also has show problematic behaviour with the closing of the window.
-   * Use `show: false` and listen to the  `ready-to-show` event to show the window.
-   *
-   * @see https://github.com/electron/electron/issues/25012 for the afford mentioned issue.
-   */
   browserWindow.on('ready-to-show', () => {
     browserWindow?.show();
 
@@ -28,6 +27,62 @@ async function createWindow() {
       browserWindow?.webContents.openDevTools();
     }
   });
+
+  // register protocol
+  app.setAsDefaultProtocolClient('dcs');
+  app.on('open-url', (_, url) => {
+    loadTokens(browserWindow, url);
+  });
+
+  // for windows system
+  app.on('second-instance', (_, commandLine) => {
+    if (browserWindow) {
+      if (browserWindow.isMinimized()) browserWindow.restore();
+      browserWindow.focus();
+    }
+    loadTokens(browserWindow, commandLine.pop() as string);
+  });
+
+  // listen action event
+  listenAction(browserWindow);
+
+  browserWindow.on('ready-to-show', () => {
+    browserWindow?.show();
+    if (import.meta.env.DEV || process.argv.includes('DEBUG')) {
+      browserWindow?.webContents.openDevTools();
+    }
+  });
+
+  // prevent close window
+  browserWindow.on('close', e => {
+    browserWindow.hide();
+    e.preventDefault();
+  });
+
+  // close application menu
+  Menu.setApplicationMenu(null);
+
+  // vire tray content and icon
+  const tray = new Tray(nativeImage.createFromDataURL(trayIcon).resize({width: 16, height: 16}));
+  tray.setToolTip('dcs ai client');
+  tray.on('double-click', () => {
+    browserWindow?.show();
+  });
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'show',
+      type: 'normal',
+      click: () => browserWindow?.show(),
+    },
+    {
+      label: 'exit',
+      type: 'normal',
+      click: () => {
+        app.exit();
+      },
+    },
+  ]);
+  tray.setContextMenu(contextMenu);
 
   /**
    * Load the main page of the main window.

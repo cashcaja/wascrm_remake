@@ -5,6 +5,10 @@
 package.json
 package-lock.json
 .electron-vendors.cache.json
+login.json
+home.json
+postcss.config.js
 
 .github
 .idea
+mr.js

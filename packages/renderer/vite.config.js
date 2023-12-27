@@ -2,6 +2,7 @@
 
 import {chrome} from '../../.electron-vendors.cache.json';
 import vue from '@vitejs/plugin-vue';
+import vueJsx from '@vitejs/plugin-vue-jsx';
 import {renderer} from 'unplugin-auto-expose';
 import {join} from 'node:path';
 import {injectAppVersion} from '../../version/inject-app-version-plugin.mjs';
@@ -21,6 +22,10 @@ const config = {
     alias: {
       '/@/': join(PACKAGE_ROOT, 'src') + '/',
     },
+  },
+  esbuild: {
+    jsxFactory: 'h',
+    jsxFragment: 'Fragment'
   },
   base: '',
   server: {
@@ -43,6 +48,7 @@ const config = {
     environment: 'happy-dom',
   },
   plugins: [
+    vueJsx(),
     vue(),
     renderer.vite({
       preloadEntry: join(PACKAGE_ROOT, '../preload/src/index.ts'),
