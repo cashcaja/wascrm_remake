@@ -1,5 +1,7 @@
-import {defineComponent, reactive} from 'vue';
+import {computed, defineComponent, onMounted, reactive, watch} from 'vue';
 import {useAppStore} from '/@/store';
+import AddAccountModal from '/@/components/AddAccount';
+import {closeInstance} from '#preload';
 
 export default defineComponent({
   name: 'AccountListView',
@@ -7,8 +9,19 @@ export default defineComponent({
     // store
     const store = useAppStore();
 
+    //state
+    const state = reactive<{
+      showCancelButton: boolean;
+      showAddAccountModal: boolean;
+    }>({
+      showCancelButton: false,
+      showAddAccountModal: false,
+    });
+
+    const waAccountList = computed(() => store.waAccountList);
+
     const choiceDelete = (persistId: string) => {
-      state.waClient.forEach(item => {
+      waAccountList.value.forEach(item => {
         if (item?.persistId === persistId) {
           item.delete = true;
         }
@@ -17,37 +30,21 @@ export default defineComponent({
     };
 
     const cancelDelete = () => {
-      state.waClient.forEach(item => {
+      waAccountList.value.forEach(item => {
         item.delete = false;
       });
       state.showCancelButton = false;
     };
 
-    //state
-    const state = reactive<{
-      waClient: WaClient[];
-      showCancelButton: boolean;
-    }>({
-      waClient: [
-        {
-          isRobot: false,
-          persistId: 'kasdjlasdajdl',
-          delete: false,
-          name: 'Rizky',
-          img: 'https://i.pravatar.cc/150?img=3',
-          appPkg: 'com.whatsapp',
-          country: 'maxico',
-          csid: '123123123',
-          csemail: 'moca_tao7@foxmail.com',
-          waAccount: '123123123',
-        },
-      ],
-      showCancelButton: false,
-    });
+    const deleteAccount = (persistId: string) => {
+      store.deleteAccount(persistId);
+      closeInstance(persistId);
+    };
+
     return () => (
       <div class="relative mt-[20px] flex flex-col justify-center items-center gap-[10px]">
-        {state?.waClient?.length > 0 &&
-          state.waClient.map(item => (
+        {waAccountList.value?.length > 0 &&
+          waAccountList.value?.map(item => (
             <div class="avatar indicator">
               {!item?.delete && (
                 <span
@@ -84,6 +81,7 @@ export default defineComponent({
                     class="i-[mdi--close] text-2xl w-[98%] h-[98%] hover:text-red-50"
                     onClick={e => {
                       e.stopPropagation();
+                      deleteAccount(item.persistId);
                     }}
                   ></span>
                 )}
@@ -99,6 +97,25 @@ export default defineComponent({
             cancel
           </button>
         )}
+
+        {waAccountList.value?.length < 10 && (
+          <div
+            class="tooltip tooltip-bottom tooltip-info"
+            data-tip="add account"
+            onClick={() => {
+              state.showAddAccountModal = true;
+              store.getAppList();
+            }}
+          >
+            <span class="i-[mdi--add-circle-outline] text-[40px] text-gray-600 mt-[10px] hover:text-gray-400"></span>
+          </div>
+        )}
+        <AddAccountModal
+          showModal={state.showAddAccountModal}
+          closeModel={() => {
+            state.showAddAccountModal = false;
+          }}
+        />
       </div>
     );
   },

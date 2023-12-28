@@ -5,7 +5,7 @@ import WhatsAppWeb from '/@/utils/whatsappClient';
 import store from '/@/store';
 
 const homeDirectory = process.env.HOME || process.env.USERPROFILE;
-const aiRobotList: WhatsAppWeb[] = [];
+const instanceList: WhatsAppWeb[] = [];
 export const addAccount = (win: BrowserWindow, opt: WaClient) => {
   console.log('add account', opt);
 
@@ -45,7 +45,7 @@ export const addAccount = (win: BrowserWindow, opt: WaClient) => {
         },
       },
     );
-    aiRobotList.push(robotInstance);
+    instanceList.push(robotInstance);
   } catch (e) {
     console.log('error---->', e);
   }
@@ -62,4 +62,40 @@ export const addAccount = (win: BrowserWindow, opt: WaClient) => {
   store.set('accountList', accountListView);
   // send browser list to renderer process
   win.webContents.send('send-accountList', accountListView);
+};
+
+export const startup = (win: BrowserWindow) => {
+  const browserList = store.get('accountList') as WaClient[];
+  store.set('accountList', []);
+  if (browserList?.length > 0) {
+    browserList.forEach(i => {
+      addAccount(win, {
+        persistId: i.persistId,
+        appPkg: i.appPkg,
+        country: i.country,
+        csemail: i.csemail,
+        csid: i.csid,
+        isRobot: i.isRobot,
+        img: i.img,
+      });
+    });
+  }
+};
+
+export const closeInstance = (persistId: string) => {
+  const instance = instanceList.find(i => i.persistId === persistId);
+  if (instance) {
+    instance.client.destroy();
+  }
+  const accountList = store.get('accountList') as WaClient[];
+  const newAccountList = accountList.filter(i => i.persistId !== persistId);
+  store.set('accountList', newAccountList);
+};
+
+export const sleep = (time: number) => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(true);
+    }, time);
+  });
 };

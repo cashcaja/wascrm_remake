@@ -14,7 +14,7 @@ export default defineComponent({
     });
 
     return () => (
-      <div class="w-[90px] h-100vh relative border-r-[1px] border-gray-700 bg-[purple]">
+      <div class="w-[90px] h-100vh relative border-r-[1px] border-gray-700">
         <AccountListView />
         <ChangeThemeModal
           visible={state.showChangeThemeModal}

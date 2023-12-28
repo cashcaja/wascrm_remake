@@ -10,7 +10,7 @@ interface WaClient {
   csemail: string;
   waAccount?: string;
   host?: string;
-  port?: number;
+  port?: number | null;
   username?: string;
   password?: string;
 }
@@ -34,4 +34,16 @@ interface Ask {
 interface TalkHistory {
   persistId: string;
   history: string;
+}
+
+interface AppInfo {
+  id: number;
+  appName: string;
+  appPkg: string;
+  onlineServiceWa: string;
+  botWa?: string;
+  country: string;
+  label: string;
+  value: string;
+  robot: boolean;
 }

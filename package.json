@@ -70,6 +70,8 @@
     "lodash": "^4.17.21",
     "lottie-web": "^5.12.2",
     "pinia": "^2.1.7",
+    "pinia-plugin-persistedstate": "^3.2.1",
+    "qrcode.vue": "^3.4.1",
     "qs": "^6.11.2",
     "rimraf": "^5.0.5",
     "theme-change": "^2.5.0",

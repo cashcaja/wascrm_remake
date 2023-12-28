@@ -17,3 +17,39 @@ export const getAccountList = (cb: (params: any) => void) => {
     cb(arg);
   });
 };
+
+export const getQrCode = (cb: (params: any) => void) => {
+  ipcRenderer.on('send-qr-code', (_, arg) => {
+    cb(arg);
+  });
+};
+
+export const addAccount = (opt: Partial<WaClient>) => {
+  ipcRenderer.send('add-account', opt);
+};
+
+export const startup = () => {
+  ipcRenderer.send('restore-account');
+};
+
+export const loginSuccess = (cb: () => void) => {
+  ipcRenderer.on('login-success', () => {
+    cb();
+  });
+};
+
+export const setLoading = (cb: (status: boolean) => void) => {
+  ipcRenderer.on('set-loading', (_, status: boolean) => {
+    cb(status);
+  });
+};
+
+export const closeInstance = (persistId: string) => {
+  ipcRenderer.send('close-instance', persistId);
+};
+
+export const listenGetChats = (cb: (params: any) => void) => {
+  ipcRenderer.on('send-talk-history', (_, chats) => {
+    cb(chats);
+  });
+};

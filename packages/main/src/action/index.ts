@@ -1,5 +1,5 @@
 import {type BrowserWindow, ipcMain, shell} from 'electron';
-import {addAccount} from '/@/utils';
+import {addAccount, closeInstance, startup} from '/@/utils';
 
 const listenOpenExternal = () => {
   // restore browser view with persist
@@ -9,12 +9,28 @@ const listenOpenExternal = () => {
 };
 
 const listenAddAccount = (window: BrowserWindow) => {
-  ipcMain.handle('add-account', (_, opt) => {
+  ipcMain.on('add-account', (_, opt) => {
     addAccount(window, opt);
+  });
+};
+
+const listenRestoreAccount = (window: BrowserWindow) => {
+  // restore browser view with persist
+  ipcMain.on('restore-account', () => {
+    startup(window);
+  });
+};
+
+const listenCloseInstance = () => {
+  ipcMain.on('close-instance', (_, persistId) => {
+    console.log('close-instance', persistId);
+    closeInstance(persistId);
   });
 };
 
 export default (window: BrowserWindow) => {
   listenOpenExternal();
   listenAddAccount(window);
+  listenRestoreAccount(window);
+  listenCloseInstance();
 };

@@ -1,10 +1,9 @@
 import {defineComponent} from 'vue';
 import {onMounted} from 'vue';
 import {themeChange} from 'theme-change';
-import {vi} from 'vitest';
-import {isBoolean} from 'lodash';
 
 const themes: string[] = [
+  'business',
   'light',
   'dark',
   'cupcake',
@@ -28,7 +27,6 @@ const themes: string[] = [
   'dracula',
   'cmyk',
   'autumn',
-  'business',
   'acid',
   'lemonade',
   'night',
