@@ -33,7 +33,9 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      store.setLoading(true);
+      if (store?.waAccountList?.length > 0) {
+        store.setLoading(true);
+      }
       // restore account list
       startup();
 
@@ -43,7 +45,6 @@ export default defineComponent({
         store.setWaAccountList(accountList);
         // set current account
         store.setCurrentWaAccountPersistId(accountList[accountList.length - 1].persistId);
-        store.setLoading(false);
       });
 
       // loading status control with backend
@@ -61,8 +62,6 @@ export default defineComponent({
       // login success
       loginSuccess(() => {
         state.showQrCodeModal = false;
-        // second to loading. wait for client to ready
-        store.setLoading(true);
       });
 
       // get current account chats
@@ -70,6 +69,13 @@ export default defineComponent({
         store.setChatsHistory(chats);
         store.setLoading(false);
       });
+
+      watch(
+        () => store.loading,
+        () => {
+          console.log('loading', store.loading);
+        },
+      );
 
       // receive message
       listenReceiveMsg(msg => {

@@ -3,6 +3,7 @@ import {useAppStore} from '/@/store';
 import {defineComponent, onMounted, reactive, watch} from 'vue';
 import {getUserInfoWithBackend, openExternal} from '#preload';
 import LoginAnimation from '/@/components/LoginAnimation';
+import {userInfoFromBackend} from '/@/apis/account';
 
 export default defineComponent({
   name: 'LoginPage',
@@ -22,27 +23,45 @@ export default defineComponent({
     const clientId = '24TpzzMRXuKTsVgrB5TQd8gbV9u2Epz0';
     const redirectUri = 'dcs://open';
 
+    const logError = () => {
+      state.showLoginError = true;
+      setTimeout(() => {
+        state.showLoginError = false;
+        // auth failed, logout
+        openExternal('https://mobene.us.auth0.com/v2/logout');
+      }, 3000);
+    };
+
+    const checkAuth = async () => {
+      // if token exists, redirect to home page
+      if (store?.token && store?.userInfo) {
+        if (store?.role && ['manager', 'customer-service'].includes(store.role)) {
+          try {
+            const res: any = await userInfoFromBackend({user_id: store.userInfo.sub});
+            if (res.code !== 0) {
+              logError();
+            }
+            router.push('/home');
+          } catch (e) {
+            logError();
+          }
+        } else {
+          logError();
+        }
+      }
+    };
+
     onMounted(() => {
       getUserInfoWithBackend(info => {
         setUserInfo(info);
       });
+      checkAuth();
     });
 
     watch(
       () => [store?.token, store?.userInfo],
       () => {
-        if (store?.token && store?.userInfo) {
-          if (store?.role && ['manager', 'customer-service'].includes(store.role)) {
-            router.push('/home');
-          } else {
-            state.showLoginError = true;
-            setTimeout(() => {
-              state.showLoginError = false;
-              // auth failed, logout
-              openExternal('https://mobene.us.auth0.com/v2/logout');
-            }, 3000);
-          }
-        }
+        checkAuth();
       },
     );
 

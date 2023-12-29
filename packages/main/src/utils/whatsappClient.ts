@@ -44,7 +44,6 @@ class WhatsAppWeb {
 
     // on ready message
     this.client.on('ready', () => {
-      this.win.webContents.send('set-loading', false);
       // 打开ai职守和埋点上传
       this.receiveMessage();
       // add wa account to store
