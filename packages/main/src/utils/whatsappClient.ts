@@ -89,53 +89,21 @@ class WhatsAppWeb {
       console.log('get wa account error', e);
     }
   }
+  public sendMsg(to: string, msg: string) {
+    return this.client.sendMessage(to, msg);
+  }
 
   public receiveMessage() {
-    // this.client.on('message', async message => {
-    //   // ensure not duplicate
-    //   await this.getChats();
-    //   const targetChatUserInfo = await message.getContact();
-    //   if (this.chatHistory.length > 0) {
-    //     for (const i of this.chatHistory) {
-    //       if (i.id === targetChatUserInfo.number && i.id !== this.client.info.wid.user) {
-    //         // add user ask to history
-    //         i.allMsg.push({ask: message.body, time: message.timestamp});
-    //         console.log('country --- appPkg', this.country, this.appPkg);
-    //
-    //         const aiParams = {
-    //           query: message.body,
-    //           uid: targetChatUserInfo.number,
-    //           app_pkg: this.appPkg,
-    //           wa_phone: this.client.info.wid.user,
-    //         };
-    //         let res;
-    //         try {
-    //           res = await getAIResponse(aiParams);
-    //         } catch (e) {
-    //           console.log('ai response error--->', e);
-    //         }
-    //         console.log('ai response--->', res);
-    //         await message.reply(
-    //           res?.data?.reply
-    //             ? res?.data?.reply
-    //             : process.argv.includes('DEBUG') // debug mode will get msg
-    //               ? res?.data
-    //               : 'error', // product
-    //         );
-    //         // add ai response to history
-    //         i.allMsg.push({
-    //           answer: res?.data?.reply,
-    //           time: dayjs().valueOf(),
-    //         });
-    //       }
-    //     }
-    //   }
-    //
-    //   this.win.webContents.send('send-talk-history', {
-    //     persistId: this.persistId,
-    //     history: JSON.stringify(this.chatHistory),
-    //   });
-    // });
+    this.client.on('message', async message => {
+      this.win.webContents.send('received-msg-from-client', {
+        persistId: this.persistId,
+        msg: message.body,
+        from: message.from,
+        time: message.timestamp,
+        to: message.to,
+        me: message.fromMe ? message.from : message.to,
+      });
+    });
   }
 }
 

@@ -1,5 +1,5 @@
 import {type BrowserWindow, ipcMain, shell} from 'electron';
-import {addAccount, closeInstance, startup} from '/@/utils';
+import {addAccount, closeInstance, distributionMsgWithSend, startup} from '/@/utils';
 
 const listenOpenExternal = () => {
   // restore browser view with persist
@@ -28,9 +28,22 @@ const listenCloseInstance = () => {
   });
 };
 
+const listenSendMsgToClient = () => {
+  ipcMain.handle('send-msg-to-client', async (_, params) => {
+    try {
+      console.log('send-msg-to-client', params);
+      await distributionMsgWithSend(params.persistId, params.msg, params.to);
+      return {msg: 'send success', status: 'ok'};
+    } catch (e: any) {
+      return {msg: e.toString(), status: 'error'};
+    }
+  });
+};
+
 export default (window: BrowserWindow) => {
   listenOpenExternal();
   listenAddAccount(window);
   listenRestoreAccount(window);
   listenCloseInstance();
+  listenSendMsgToClient();
 };

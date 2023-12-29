@@ -2,15 +2,6 @@ import {defineStore} from 'pinia';
 import {ref} from 'vue';
 import {userInfoFromBackend} from '/@/apis/account';
 
-interface UserInfo {
-  sub: string;
-  email: string;
-  'https://ai-assist-test-us.wuli.cash/roles': string[];
-  nickname: string;
-  picture: string;
-  token: string;
-}
-
 export const useAppStore = defineStore(
   'app',
   () => {
@@ -24,7 +15,8 @@ export const useAppStore = defineStore(
 
     // talk history
     const chatHistory = ref<{[key: string]: any[]}>({});
-    const talkList = ref<{name: string; timestamp: string}[]>([]);
+    const talkList = ref<{name: string; timestamp: string; talk: Talk[]}[]>([]);
+    const currentTalk = ref<Talk[]>();
 
     // req data
     const appList = ref<AppInfo[]>([]);
@@ -59,8 +51,12 @@ export const useAppStore = defineStore(
       chatHistory.value = {[params.persistId]: JSON.parse(params.history)};
     };
 
-    const setTalkList = (list: {timestamp: string; name: string}[]) => {
+    const setTalkList = (list: {timestamp: string; name: string; talk: Talk[]}[]) => {
       talkList.value = list;
+    };
+
+    const setCurrentTalk = (talk: Talk[]) => {
+      currentTalk.value = talk;
     };
 
     // async function
@@ -113,6 +109,8 @@ export const useAppStore = defineStore(
       loading,
       chatHistory,
       talkList,
+      currentTalk,
+      setCurrentTalk,
       setTalkList,
       setLoading,
       setUserInfo,

@@ -1,20 +1,33 @@
-import {defineComponent, watch, onMounted} from 'vue';
+import {defineComponent, watch, onMounted, KeepAlive} from 'vue';
 import {useAppStore} from '/@/store';
-import TalkList from '/@/components/ContentArea/TalkList';
+import TalkView from '/@/components/ContentArea/TalkView';
+import TalkListView from '/@/components/ContentArea/TalkListView';
 
 export default defineComponent({
   name: 'ContentArea',
   setup() {
     // store
     const store = useAppStore();
-    // state
-    onMounted(() => {
-      console.log('all chats', store.chatHistory);
+
+    // feat func
+    const getTalkList = () => {
       if (store?.chatHistory?.[store?.currentWaAccountPersistId]) {
         const talkList = store.chatHistory[store.currentWaAccountPersistId].map(i => {
+          const tempTalk: Talk[] = [];
+
+          // get last message
+          tempTalk.push({
+            type: i.lastMessage.id.fromMe ? 'send' : 'receive',
+            msg: i.lastMessage.body,
+            timestamp: i.lastMessage.timestamp,
+            to: i.id._serialized, // current service wa account id
+            me: i.lastMessage.fromMe ? i.lastMessage.from : i.lastMessage.to,
+          });
+
           return {
-            name: i.name,
+            name: i.id._serialized,
             timestamp: i.timestamp,
+            talk: tempTalk,
           };
         });
 
@@ -22,27 +35,26 @@ export default defineComponent({
           store.setTalkList(talkList);
         }
       }
+    };
+
+    onMounted(() => {
+      console.log('all chats', store.chatHistory);
+      getTalkList();
     });
 
     watch(
       () => [store.chatHistory, store.currentWaAccountPersistId],
       () => {
-        const talkList = store.chatHistory[store.currentWaAccountPersistId].map(i => {
-          return {
-            name: i.name,
-            timestamp: i.timestamp,
-          };
-        });
-
-        if (talkList) {
-          store.setTalkList(talkList);
-        }
+        getTalkList();
       },
     );
 
     return () => (
       <div class="flex flex-row m-0 p-0">
-        <TalkList />
+        <KeepAlive>
+          <TalkListView />
+          <TalkView />
+        </KeepAlive>
       </div>
     );
   },

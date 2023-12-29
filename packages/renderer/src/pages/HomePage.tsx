@@ -9,6 +9,7 @@ import {
   startup,
   loginSuccess,
   listenGetChats,
+  listenReceiveMsg,
 } from '#preload';
 import QrCodeModal from '/@/components/QrCode';
 import ContentArea from '/@/components/ContentArea';
@@ -60,11 +61,30 @@ export default defineComponent({
       // login success
       loginSuccess(() => {
         state.showQrCodeModal = false;
+        // second to loading. wait for client to ready
+        store.setLoading(true);
       });
 
       // get current account chats
       listenGetChats(chats => {
         store.setChatsHistory(chats);
+        store.setLoading(false);
+      });
+
+      // receive message
+      listenReceiveMsg(msg => {
+        console.log('receive msg---->', msg);
+        store.talkList.forEach(i => {
+          if (i.name === msg.from) {
+            i.talk.unshift({
+              type: msg.from !== msg.me ? 'receive' : 'send',
+              msg: msg.msg,
+              timestamp: msg.timestamp,
+              to: msg.to,
+              me: msg.from,
+            });
+          }
+        });
       });
     });
 

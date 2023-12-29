@@ -47,3 +47,21 @@ interface AppInfo {
   value: string;
   robot: boolean;
 }
+
+interface UserInfo {
+  sub: string;
+  email: string;
+  'https://ai-assist-test-us.wuli.cash/roles': string[];
+  nickname: string;
+  picture: string;
+  token: string;
+}
+
+interface Talk {
+  type: string;
+  msg: string;
+  timestamp: number | string;
+  me: string; // current wa account user not customer wa account
+  to: string;
+  failed?: boolean;
+}

@@ -53,3 +53,13 @@ export const listenGetChats = (cb: (params: any) => void) => {
     cb(chats);
   });
 };
+
+export const sendMsgToClient = (params: {persistId: string; msg: string; to: string}) => {
+  return ipcRenderer.invoke('send-msg-to-client', params);
+};
+
+export const listenReceiveMsg = (cb: (params: any) => void) => {
+  ipcRenderer.on('received-msg-from-client', (_, data: any) => {
+    cb(data);
+  });
+};

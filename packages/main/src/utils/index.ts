@@ -92,6 +92,15 @@ export const closeInstance = (persistId: string) => {
   store.set('accountList', newAccountList);
 };
 
+export const distributionMsgWithSend = (persisId: string, msg: string, to: string) => {
+  const instance = instanceList.find(i => i.persistId === persisId);
+  if (instance) {
+    return instance.sendMsg(to, msg);
+  } else {
+    return Promise.reject('no instance');
+  }
+};
+
 export const sleep = (time: number) => {
   return new Promise(resolve => {
     setTimeout(() => {
