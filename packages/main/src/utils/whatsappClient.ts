@@ -105,6 +105,10 @@ class WhatsAppWeb {
     }
   }
 
+  public switchAccount() {
+    this.isRobot = !this.isRobot;
+  }
+
   public receiveMessage() {
     this.client.on('message', async message => {
       this.win.webContents.send('received-msg-from-client', {

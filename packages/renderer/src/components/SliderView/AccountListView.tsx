@@ -1,7 +1,7 @@
-import {computed, defineComponent, onMounted, reactive, watch} from 'vue';
+import {computed, defineComponent, reactive} from 'vue';
 import {useAppStore} from '/@/store';
 import AddAccountModal from '/@/components/AddAccount';
-import {closeInstance} from '#preload';
+import {closeInstance, switchAccountWithClient} from '#preload';
 
 export default defineComponent({
   name: 'AccountListView',
@@ -39,6 +39,15 @@ export default defineComponent({
     const deleteAccount = (persistId: string) => {
       store.deleteAccount(persistId);
       closeInstance(persistId);
+    };
+
+    const switchAccount = () => {
+      store.waAccountList.forEach(item => {
+        item.isRobot = !item.isRobot;
+        item.delete = false;
+      });
+      switchAccountWithClient(store.currentWaAccountPersistId);
+      state.showCancelButton = false;
     };
 
     return () => (
@@ -90,12 +99,20 @@ export default defineComponent({
           ))}
 
         {state.showCancelButton && (
-          <button
-            class="btn btn-primary btn-sm mt-[20px]"
-            onClick={cancelDelete}
-          >
-            cancel
-          </button>
+          <>
+            <button
+              class="btn btn-primary btn-sm mt-[20px]"
+              onClick={cancelDelete}
+            >
+              cancel
+            </button>
+            <button
+              class="btn btn-primary btn-sm mt-[20px]"
+              onClick={switchAccount}
+            >
+              switch
+            </button>
+          </>
         )}
 
         {waAccountList.value?.length < 10 && (

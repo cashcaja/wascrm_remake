@@ -17,7 +17,7 @@ export const useAppStore = defineStore(
 
     // talk history
     const chatHistory = ref<{[key: string]: any[]}>({});
-    const talkList = ref<{name: string; timestamp: string; talk: Talk[]}[]>([]);
+    const talkList = ref<{name: string; timestamp: number; talk: Talk[]}[]>([]);
     const currentTalk = ref<Talk[]>();
 
     // req data
@@ -63,10 +63,16 @@ export const useAppStore = defineStore(
     };
 
     const setChatsHistory = (params: {history: string; persistId: string}) => {
-      chatHistory.value = {[params.persistId]: JSON.parse(params.history)};
+      const tempHistory = JSON.parse(params.history);
+      tempHistory.forEach((i: any) => {
+        if (i.timestamp < 9000000000000) {
+          i.timestamp = Number(i.timestamp) * 1000;
+        }
+      });
+      chatHistory.value = {[params.persistId]: tempHistory};
     };
 
-    const setTalkList = (list: {timestamp: string; name: string; talk: Talk[]}[]) => {
+    const setTalkList = (list: {timestamp: number; name: string; talk: Talk[]}[]) => {
       talkList.value = list;
     };
 
@@ -129,7 +135,7 @@ export const useAppStore = defineStore(
           aiChatHistory.value.push({
             type: 'robot',
             content: aiRes.data.reply,
-            timestamp: dayjs().valueOf(),
+            timestamp: dayjs().unix(),
             lastAsk: params.query,
           });
         }
@@ -137,7 +143,7 @@ export const useAppStore = defineStore(
         aiChatHistory.value.push({
           type: 'robot',
           content: e.toString(),
-          timestamp: dayjs().valueOf(),
+          timestamp: dayjs().unix(),
           lastAsk: params.query,
         });
         aiChatHistory.value.push({

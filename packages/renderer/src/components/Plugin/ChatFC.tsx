@@ -18,7 +18,7 @@ export default defineComponent({
         app_pkg: currentWaAccount.appPkg,
         uid: currentWaAccount.csid,
         wa_phone: currentWaAccount.waAccount,
-        timestamp: dayjs().valueOf(),
+        timestamp: dayjs().unix(),
       });
     };
 
@@ -56,7 +56,7 @@ export default defineComponent({
                   </div>
                   <div class="chat-footer">
                     <time class="text-xs opacity-60">
-                      {dayjs(i.timestamp).format('YYYY-MM-DD HH:mm:ss')}
+                      {dayjs(Number(i.timestamp) * 1000).format('YYYY-MM-DD HH:mm:ss')}
                     </time>
                   </div>
 

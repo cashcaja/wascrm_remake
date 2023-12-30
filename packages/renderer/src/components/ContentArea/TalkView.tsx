@@ -23,7 +23,7 @@ export default defineComponent({
             i.talk.unshift({
               type: 'send',
               msg: msg,
-              timestamp: Date.now(),
+              timestamp: dayjs().unix(),
               to: to,
               me: store.currentWaAccountPersistId,
               failed: res.status === 'error',
@@ -43,7 +43,7 @@ export default defineComponent({
         app_pkg: currentWaAccount.appPkg,
         uid: currentWaAccount.csid,
         wa_phone: currentWaAccount.waAccount,
-        timestamp: dayjs().valueOf(),
+        timestamp: dayjs().unix(),
       });
     };
 
@@ -54,7 +54,7 @@ export default defineComponent({
             store?.currentTalk?.length > 0 &&
             store.currentTalk.map(i => (
               <div class={`chat ${i.type === 'send' ? 'chat-end' : 'chat-start'} `}>
-                <div class="chat-header">{i.type === 'send' ? 'You' : i.me}</div>
+                <div class="chat-header">{i.type === 'send' ? 'You' : i.to}</div>
                 <div
                   class={`chat-bubble ${
                     i.type === 'send' ? 'chat-bubble-primary' : 'chat-bubble-success'

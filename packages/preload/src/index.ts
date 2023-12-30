@@ -71,3 +71,7 @@ export const listenReceiveMsg = (cb: (params: any) => void) => {
     cb(data);
   });
 };
+
+export const switchAccountWithClient = (persistId: string) => {
+  ipcRenderer.send('switch-account', persistId);
+};

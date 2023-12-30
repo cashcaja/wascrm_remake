@@ -1,5 +1,12 @@
 import {type BrowserWindow, ipcMain, shell} from 'electron';
-import {addAccount, closeInstance, distributionMsgWithSend, newContact, startup} from '/@/utils';
+import {
+  addAccount,
+  closeInstance,
+  distributionMsgWithSend,
+  newContact,
+  startup,
+  switchAccount,
+} from '/@/utils';
 
 const listenOpenExternal = () => {
   // restore browser view with persist
@@ -54,6 +61,12 @@ const listenNewContact = () => {
   );
 };
 
+const listenSwitchAccount = () => {
+  ipcMain.on('switch-account', async (_, persistId: string) => {
+    switchAccount(persistId);
+  });
+};
+
 export default (window: BrowserWindow) => {
   listenOpenExternal();
   listenAddAccount(window);
@@ -61,4 +74,5 @@ export default (window: BrowserWindow) => {
   listenCloseInstance();
   listenSendMsgToClient();
   listenNewContact();
+  listenSwitchAccount();
 };

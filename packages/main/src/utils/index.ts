@@ -108,6 +108,23 @@ export const newContact = (persisId: string, contact: string, msg: string) => {
   }
 };
 
+export const switchAccount = (persistId: string) => {
+  const instance = instanceList.find(i => i.persistId === persistId);
+  if (instance) {
+    instance.switchAccount();
+  }
+
+  const accountList = store.get('accountList') as WaClient[];
+  const newAccountList = accountList.map(i => {
+    if (i.persistId === persistId) {
+      i.isRobot = !i.isRobot;
+    }
+    return i;
+  });
+  console.log('update account list', newAccountList);
+  store.set('accountList', newAccountList);
+};
+
 export const sleep = (time: number) => {
   return new Promise(resolve => {
     setTimeout(() => {

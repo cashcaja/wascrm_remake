@@ -10,10 +10,13 @@ import {
   loginSuccess,
   listenGetChats,
   listenReceiveMsg,
+  sendMsgToClient,
 } from '#preload';
 import QrCodeModal from '/@/components/QrCode';
 import ContentArea from '/@/components/ContentArea';
 import Plugin from '/@/components/Plugin';
+import dayjs from 'dayjs';
+import {askAI} from '/@/apis/chat';
 
 export default defineComponent({
   setup() {
@@ -32,6 +35,70 @@ export default defineComponent({
       message: '',
       showToast: false,
     });
+
+    const listenRobotMsg = async (msg: any) => {
+      // if robot account will auto reply
+      const currentWaAccount = store.waAccountList.find(
+        i => i.persistId === store?.currentWaAccountPersistId,
+      );
+      if (msg.from !== msg.me && currentWaAccount?.waAccount && currentWaAccount?.isRobot) {
+        try {
+          const aiRes: any = await askAI({
+            query: msg.msg,
+            app_pkg: currentWaAccount.appPkg,
+            uid: currentWaAccount.csid,
+            wa_phone: currentWaAccount.waAccount,
+          });
+
+          if (aiRes.code === 0 && aiRes?.data?.reply) {
+            const res = await sendMsgToClient({
+              persistId: store.currentWaAccountPersistId,
+              msg: aiRes.data.reply,
+              to: msg.from,
+            });
+            store.talkList.forEach(i => {
+              if (i.name === msg.from) {
+                i.talk.unshift({
+                  type: 'send',
+                  msg: aiRes.data.reply,
+                  timestamp: dayjs().unix(),
+                  to: msg.to,
+                  me: msg.from,
+                  failed: res.status === 'error',
+                });
+              }
+            });
+          } else {
+            store.talkList.forEach(i => {
+              if (i.name === msg.from) {
+                i.talk.unshift({
+                  type: 'send',
+                  msg: 'ai response error',
+                  timestamp: dayjs().unix(),
+                  to: msg.to,
+                  me: msg.from,
+                  failed: true,
+                });
+              }
+            });
+          }
+        } catch (e) {
+          console.log('error', e);
+          store.talkList.forEach(i => {
+            if (i.name === msg.from) {
+              i.talk.unshift({
+                type: 'send',
+                msg: 'unknown error',
+                timestamp: dayjs().unix(),
+                to: msg.to,
+                me: msg.from,
+                failed: true,
+              });
+            }
+          });
+        }
+      }
+    };
 
     onMounted(() => {
       if (store?.waAccountList?.length > 0) {
@@ -71,13 +138,6 @@ export default defineComponent({
         store.setLoading(false);
       });
 
-      watch(
-        () => store.loading,
-        () => {
-          console.log('loading', store.loading);
-        },
-      );
-
       // receive message
       listenReceiveMsg(msg => {
         console.log('receive msg---->', msg);
@@ -88,10 +148,12 @@ export default defineComponent({
               msg: msg.msg,
               timestamp: msg.timestamp,
               to: msg.to,
-              me: msg.from,
+              me: msg.from, // if msg from customer me is custom
             });
           }
         });
+        // if on account is robot
+        listenRobotMsg(msg);
       });
     });
 

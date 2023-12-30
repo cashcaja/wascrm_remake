@@ -33,7 +33,9 @@ export default defineComponent({
               key={k}
               class={'flex w-[100%] p-[5px] gap-[2px]'}
               onClick={() => {
-                store.setCurrentTalk(i.talk);
+                if (i?.talk) {
+                  store.setCurrentTalk(i.talk);
+                }
               }}
             >
               <a>
@@ -45,7 +47,7 @@ export default defineComponent({
                 <div class="min-w-0 flex-auto">
                   <p class="text-sm font-semibold leading-6 ">{i?.name}</p>
                   <p class="mt-1 truncate text-xs leading-5 ">
-                    {dayjs(Number(i.timestamp) * 1000).format('YYYY-MM-DD HH:mm')}
+                    {dayjs(i.timestamp).format('YYYY-MM-DD HH:mm')}
                   </p>
                 </div>
               </a>
