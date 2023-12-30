@@ -35,7 +35,7 @@ export default defineComponent({
           }
           return {
             name: i.id._serialized,
-            timestamp: i?.timestamp ? i?.timestamp : dayjs().unix(),
+            timestamp: i?.timestamp ? i?.timestamp : dayjs().valueOf(),
             talk: tempTalk,
           };
         });

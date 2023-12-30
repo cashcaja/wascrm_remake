@@ -135,7 +135,7 @@ export const useAppStore = defineStore(
           aiChatHistory.value.push({
             type: 'robot',
             content: aiRes.data.reply,
-            timestamp: dayjs().unix(),
+            timestamp: dayjs().valueOf(),
             lastAsk: params.query,
           });
         }
@@ -143,7 +143,7 @@ export const useAppStore = defineStore(
         aiChatHistory.value.push({
           type: 'robot',
           content: e.toString(),
-          timestamp: dayjs().unix(),
+          timestamp: dayjs().valueOf(),
           lastAsk: params.query,
         });
         aiChatHistory.value.push({

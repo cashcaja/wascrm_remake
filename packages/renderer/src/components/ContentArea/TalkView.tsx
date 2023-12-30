@@ -23,7 +23,7 @@ export default defineComponent({
             i.talk.unshift({
               type: 'send',
               msg: msg,
-              timestamp: dayjs().unix(),
+              timestamp: dayjs().valueOf(),
               to: to,
               me: store.currentWaAccountPersistId,
               failed: res.status === 'error',
@@ -43,7 +43,7 @@ export default defineComponent({
         app_pkg: currentWaAccount.appPkg,
         uid: currentWaAccount.csid,
         wa_phone: currentWaAccount.waAccount,
-        timestamp: dayjs().unix(),
+        timestamp: dayjs().valueOf(),
       });
     };
 
@@ -91,7 +91,7 @@ export default defineComponent({
                 </div>
                 <div class="chat-footer">
                   <time class="text-xs opacity-60">
-                    {dayjs(Number(i.timestamp) * 1000).format('YYYY-MM-DD HH:mm:ss')}
+                    {dayjs(i.timestamp).format('YYYY-MM-DD HH:mm:ss')}
                   </time>
                 </div>
 

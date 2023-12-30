@@ -61,7 +61,7 @@ export default defineComponent({
                 i.talk.unshift({
                   type: 'send',
                   msg: aiRes.data.reply,
-                  timestamp: dayjs().unix(),
+                  timestamp: dayjs().valueOf(),
                   to: msg.to,
                   me: msg.from,
                   failed: res.status === 'error',
@@ -74,7 +74,7 @@ export default defineComponent({
                 i.talk.unshift({
                   type: 'send',
                   msg: 'ai response error',
-                  timestamp: dayjs().unix(),
+                  timestamp: dayjs().valueOf(),
                   to: msg.to,
                   me: msg.from,
                   failed: true,
@@ -89,7 +89,7 @@ export default defineComponent({
               i.talk.unshift({
                 type: 'send',
                 msg: 'unknown error',
-                timestamp: dayjs().unix(),
+                timestamp: dayjs().valueOf(),
                 to: msg.to,
                 me: msg.from,
                 failed: true,

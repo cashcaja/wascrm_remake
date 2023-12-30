@@ -18,7 +18,7 @@ export default defineComponent({
         app_pkg: currentWaAccount.appPkg,
         uid: currentWaAccount.csid,
         wa_phone: currentWaAccount.waAccount,
-        timestamp: dayjs().unix(),
+        timestamp: dayjs().valueOf(),
       });
     };
 
