@@ -13,6 +13,7 @@ import {
 } from '#preload';
 import QrCodeModal from '/@/components/QrCode';
 import ContentArea from '/@/components/ContentArea';
+import Plugin from '/@/components/Plugin';
 
 export default defineComponent({
   setup() {
@@ -132,18 +133,20 @@ export default defineComponent({
         )}
 
         {store.loading ? (
-          <div class="relative w-[calc(100%-560px+90px)] ">
+          <div class="relative w-full h-[100vh]">
             <span class="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] m-[auto] loading loading-bars loading-lg w-[150px]" />
           </div>
         ) : (
           <>
             <SliderView />
-            <div class="w-[calc(100%-560px)] flex flex-col ">
+            <div class="w-[calc(100%-560px)] flex flex-col h-[100vh] ">
               <ContentArea />
+            </div>
+            <div class="w-[470px] h-[100vh] border-l-[1px] border-gray-700">
+              <Plugin />
             </div>
           </>
         )}
-        <div class="w-[470px] h-[100vh] border-l-[1px] border-gray-700"></div>
 
         <QrCodeModal
           showModal={state.showQrCodeModal}

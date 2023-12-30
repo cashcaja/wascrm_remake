@@ -15,27 +15,6 @@ interface WaClient {
   password?: string;
 }
 
-interface ChatHistory {
-  id: string | number; // this is the user phone number
-  chat: any;
-  allMsg: (Ask | Answer)[];
-}
-
-interface Answer {
-  answer: string;
-  time: number;
-}
-
-interface Ask {
-  ask: string;
-  time: number;
-}
-
-interface TalkHistory {
-  persistId: string;
-  history: string;
-}
-
 interface AppInfo {
   id: number;
   appName: string;
@@ -61,7 +40,7 @@ interface Talk {
   type: string;
   msg: string;
   timestamp: number | string;
-  me: string; // current wa account user not customer wa account
+  me: string; //  on send me is customer , on receive me is me
   to: string;
   failed?: boolean;
 }

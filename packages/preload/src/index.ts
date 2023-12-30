@@ -58,6 +58,14 @@ export const sendMsgToClient = (params: {persistId: string; msg: string; to: str
   return ipcRenderer.invoke('send-msg-to-client', params);
 };
 
+export const newContactMsgToClient = (params: {
+  persistId: string;
+  msg: string;
+  contact: string;
+}) => {
+  return ipcRenderer.invoke('new-contact', params);
+};
+
 export const listenReceiveMsg = (cb: (params: any) => void) => {
   ipcRenderer.on('received-msg-from-client', (_, data: any) => {
     cb(data);

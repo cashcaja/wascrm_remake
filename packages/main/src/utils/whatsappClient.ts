@@ -43,7 +43,7 @@ class WhatsAppWeb {
     });
 
     // on ready message
-    this.client.on('ready', () => {
+    this.client.on('ready', async () => {
       // 打开ai职守和埋点上传
       this.receiveMessage();
       // add wa account to store
@@ -90,6 +90,19 @@ class WhatsAppWeb {
   }
   public sendMsg(to: string, msg: string) {
     return this.client.sendMessage(to, msg);
+  }
+
+  public async newContact(to: string, msg: string) {
+    console.log('---->', to, msg);
+    const contact = await this.client.getContactById(to);
+    if (contact.isWAContact) {
+      console.log('send ---->');
+      const sendRes = await this.client.sendMessage(to, msg);
+      await this.getChats();
+      return sendRes;
+    } else {
+      return {msg: 'not a wa contact', status: 'error'};
+    }
   }
 
   public receiveMessage() {

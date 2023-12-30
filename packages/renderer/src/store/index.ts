@@ -1,6 +1,8 @@
 import {defineStore} from 'pinia';
 import {ref} from 'vue';
 import {userInfoFromBackend} from '/@/apis/account';
+import {askAI} from '/@/apis/chat';
+import dayjs from 'dayjs';
 
 export const useAppStore = defineStore(
   'app',
@@ -24,6 +26,19 @@ export const useAppStore = defineStore(
     // utils
     const showMessage = ref<{msg: string; type: 'error' | 'success'; action?: string}>();
     const loading = ref<boolean>(false);
+    const aiLoading = ref<boolean>(false);
+
+    // plugin
+    const currentTab = ref<string>('Chat');
+    const aiChatHistory = ref<
+      {
+        type: 'user' | 'robot';
+        content: string;
+        timestamp?: number;
+        failed?: boolean;
+        lastAsk?: string;
+      }[]
+    >([]);
 
     const setUserInfo = (info: UserInfo) => {
       userInfo.value = info;
@@ -94,8 +109,65 @@ export const useAppStore = defineStore(
       }
     };
 
+    const getAIResponse = async (params: {
+      query: string;
+      app_pkg: string;
+      uid: string;
+      wa_phone: string;
+      timestamp: number;
+    }) => {
+      try {
+        aiLoading.value = true;
+        const aiRes: any = await askAI(params);
+        aiChatHistory.value.push({
+          type: 'user',
+          content: params.query,
+          timestamp: params.timestamp,
+        });
+        if (aiRes.code === 0) {
+          showMessage.value = {msg: aiRes.msg, type: 'success'};
+          aiChatHistory.value.push({
+            type: 'robot',
+            content: aiRes.data.reply,
+            timestamp: dayjs().valueOf(),
+            lastAsk: params.query,
+          });
+        }
+      } catch (e: any) {
+        aiChatHistory.value.push({
+          type: 'robot',
+          content: e.toString(),
+          timestamp: dayjs().valueOf(),
+          lastAsk: params.query,
+        });
+        aiChatHistory.value.push({
+          type: 'user',
+          content: params.query,
+          failed: true,
+          timestamp: params.timestamp,
+        });
+        console.log(e);
+      } finally {
+        aiLoading.value = false;
+        setTimeout(() => {
+          const element = document.getElementById('chat_plugin');
+          element?.scrollTo({top: element.scrollHeight, behavior: 'smooth'});
+        }, 500);
+      }
+    };
+
+    // utils
     const setShowMessage = (params: {msg: string; type: 'error' | 'success'; action?: string}) => {
       showMessage.value = params;
+    };
+
+    // plugin
+    const setCurrentTab = (tab: string) => {
+      currentTab.value = tab;
+    };
+
+    const setAiChatHistory = (history: {type: 'user' | 'robot'; content: string}[]) => {
+      aiChatHistory.value = history;
     };
 
     return {
@@ -110,6 +182,11 @@ export const useAppStore = defineStore(
       chatHistory,
       talkList,
       currentTalk,
+      currentTab,
+      aiChatHistory,
+      aiLoading,
+      setAiChatHistory,
+      setCurrentTab,
       setCurrentTalk,
       setTalkList,
       setLoading,
@@ -120,6 +197,7 @@ export const useAppStore = defineStore(
       setChatsHistory,
       deleteAccount,
       getAppList,
+      getAIResponse,
     };
   },
   {

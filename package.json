@@ -1,12 +1,12 @@
 {
-  "name": "vite-electron-builder",
-  "description": "Secure boilerplate for Electron app based on Vite",
+  "name": "dcs-ai-client",
+  "description": "dcs ai client",
   "version": "1.0.2",
   "private": true,
   "author": {
-    "email": "kozackunisoft@gmail.com",
-    "name": "Alex Kozack",
-    "url": "https://kozack.me"
+    "email": "moca_tao7@foxmail.com",
+    "name": "eliot xu",
+    "url": "taotao7.github.io"
   },
   "main": "packages/main/dist/index.cjs",
   "scripts": {

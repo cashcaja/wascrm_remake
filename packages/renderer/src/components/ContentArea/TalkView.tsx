@@ -33,14 +33,28 @@ export default defineComponent({
       }
     };
 
+    const sendToAi = async (msg: string) => {
+      const currentWaAccount = store.waAccountList.find(
+        i => i.persistId === store.currentWaAccountPersistId,
+      );
+      if (!currentWaAccount || !currentWaAccount?.waAccount) return;
+      await store.getAIResponse({
+        query: msg,
+        app_pkg: currentWaAccount.appPkg,
+        uid: currentWaAccount.csid,
+        wa_phone: currentWaAccount.waAccount,
+        timestamp: dayjs().valueOf(),
+      });
+    };
+
     return () => (
-      <div class="relative w-[calc(100%-230px)]">
-        <div class="flex flex-col-reverse h-[90%]">
+      <div class="relative w-[calc(100%-230px)] h-[100vh]">
+        <div class="flex flex-col-reverse h-[90%] overflow-y-scroll">
           {store?.currentTalk &&
             store?.currentTalk?.length > 0 &&
             store.currentTalk.map(i => (
               <div class={`chat ${i.type === 'send' ? 'chat-end' : 'chat-start'} `}>
-                <div class="chat-header">{i.type === 'send' ? 'You' : i.to}</div>
+                <div class="chat-header">{i.type === 'send' ? 'You' : i.me}</div>
                 <div
                   class={`chat-bubble ${
                     i.type === 'send' ? 'chat-bubble-primary' : 'chat-bubble-success'
@@ -60,10 +74,24 @@ export default defineComponent({
                       />
                     </div>
                   )}
+                  {i.type === 'receive' && (
+                    <div
+                      class="tooltip flex flex-row items-center absolute right-[-50px]"
+                      data-tip="ai reply"
+                    >
+                      <button
+                        class="btn btn-secondary btn-sm"
+                        disabled={store.aiLoading}
+                        onClick={() => sendToAi(i.msg)}
+                      >
+                        <span class="i-[mdi--star-four-points-outline]" />
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <div class="chat-footer">
                   <time class="text-xs opacity-60">
-                    {dayjs(i.timestamp).format('YYYY-MM-DD HH:mm:ss')}
+                    {dayjs(Number(i.timestamp) * 1000).format('YYYY-MM-DD HH:mm:ss')}
                   </time>
                 </div>
 
@@ -72,7 +100,7 @@ export default defineComponent({
                     type="text"
                     placeholder="Type here"
                     v-model={msg.value}
-                    class="input input-bordered  w-[100%]"
+                    class="input input-bordered w-[100%]"
                     onKeyup={e => {
                       if (e.key === 'Enter') {
                         sendMsg(msg.value, i.to);

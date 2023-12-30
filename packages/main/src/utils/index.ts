@@ -101,6 +101,13 @@ export const distributionMsgWithSend = (persisId: string, msg: string, to: strin
   }
 };
 
+export const newContact = (persisId: string, contact: string, msg: string) => {
+  const instance = instanceList.find(i => i.persistId === persisId);
+  if (instance) {
+    return instance.newContact(`${contact}@c.us`, msg);
+  }
+};
+
 export const sleep = (time: number) => {
   return new Promise(resolve => {
     setTimeout(() => {
