@@ -11,15 +11,18 @@ import {
   listenGetChats,
   listenReceiveMsg,
   sendMsgToClient,
+  cleanCacheWithClient,
 } from '#preload';
 import QrCodeModal from '/@/components/QrCode';
 import ContentArea from '/@/components/ContentArea';
 import Plugin from '/@/components/Plugin';
 import dayjs from 'dayjs';
 import {askAI} from '/@/apis/chat';
+import {useRouter} from 'vue-router';
 
 export default defineComponent({
   setup() {
+    const router = useRouter();
     // store
     const store = useAppStore();
 
@@ -169,7 +172,10 @@ export default defineComponent({
         setTimeout(() => {
           if (store.showMessage?.action) {
             if (store.showMessage.action === 'logout') {
+              cleanCacheWithClient();
+              localStorage.removeItem('app');
               openExternal('https://mobene.us.auth0.com/v2/logout');
+              router.push('/');
             }
           }
           state.showToast = false;

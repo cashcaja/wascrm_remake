@@ -1,6 +1,7 @@
 import {type BrowserWindow, ipcMain, shell} from 'electron';
 import {
   addAccount,
+  cleanCache,
   closeInstance,
   distributionMsgWithSend,
   newContact,
@@ -67,6 +68,12 @@ const listenSwitchAccount = () => {
   });
 };
 
+const listenCleanCache = () => {
+  ipcMain.on('clean-cache', () => {
+    cleanCache();
+  });
+};
+
 export default (window: BrowserWindow) => {
   listenOpenExternal();
   listenAddAccount(window);
@@ -75,4 +82,5 @@ export default (window: BrowserWindow) => {
   listenSendMsgToClient();
   listenNewContact();
   listenSwitchAccount();
+  listenCleanCache();
 };

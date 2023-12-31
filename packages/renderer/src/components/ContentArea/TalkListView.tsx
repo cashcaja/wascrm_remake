@@ -1,4 +1,4 @@
-import {computed, defineComponent, ref} from 'vue';
+import {computed, defineComponent, ref, watch} from 'vue';
 import {useAppStore} from '/@/store';
 import dayjs from 'dayjs';
 import NewContactModal from '/@/components/ContentArea/NewContactModal';
@@ -11,6 +11,13 @@ export default defineComponent({
     const talkList = computed(() => store.talkList);
 
     const showNewContactModal = ref<boolean>(false);
+
+    watch(
+      () => store.talkList,
+      () => {
+        store.setCurrentTalk(store.talkList[0]?.talk);
+      },
+    );
 
     return () => (
       <div class="border-r-[1px] border-gray-700">

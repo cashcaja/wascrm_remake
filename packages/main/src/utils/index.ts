@@ -3,6 +3,8 @@ import {randomUUID} from 'node:crypto';
 import {LocalAuth} from 'whatsapp-web.js';
 import WhatsAppWeb from '/@/utils/whatsappClient';
 import store from '/@/store';
+import {rimraf} from 'rimraf';
+import {join} from 'path';
 
 const homeDirectory = process.env.HOME || process.env.USERPROFILE;
 const instanceList: WhatsAppWeb[] = [];
@@ -123,6 +125,10 @@ export const switchAccount = (persistId: string) => {
   });
   console.log('update account list', newAccountList);
   store.set('accountList', newAccountList);
+};
+
+export const cleanCache = () => {
+  return rimraf(join(homeDirectory as string, '.cache/dcs'));
 };
 
 export const sleep = (time: number) => {

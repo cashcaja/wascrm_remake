@@ -1,6 +1,7 @@
 import {defineComponent, reactive} from 'vue';
 import AccountListView from '/@/components/SliderView/AccountListView';
 import ChangeThemeModal from '/@/components/SliderView/ChangeThemeModal';
+import LogoutModal from '/@/components/SliderView/LogoutModal';
 
 export default defineComponent({
   name: 'SliderView',
@@ -8,9 +9,11 @@ export default defineComponent({
     const state = reactive<{
       showChangeThemeModal: boolean;
       showSetting: boolean;
+      showLogoutModal: boolean;
     }>({
       showChangeThemeModal: false,
       showSetting: false,
+      showLogoutModal: false,
     });
 
     return () => (
@@ -20,6 +23,12 @@ export default defineComponent({
           visible={state.showChangeThemeModal}
           closeModal={() => {
             state.showChangeThemeModal = false;
+          }}
+        />
+        <LogoutModal
+          visible={state.showLogoutModal}
+          closeModal={() => {
+            state.showLogoutModal = false;
           }}
         />
 
@@ -37,12 +46,6 @@ export default defineComponent({
             class="menu bg-base-200 w-56 rounded-box absolute bottom-[55px] left-[28px]"
             onMouseleave={() => (state.showSetting = false)}
           >
-            <li onClick={() => {}}>
-              <a>
-                <span class="i-[mdi--broom] text-[22px]"></span>
-                Clean Cache
-              </a>
-            </li>
             <li
               onClick={() => {
                 state.showChangeThemeModal = true;
@@ -53,7 +56,11 @@ export default defineComponent({
                 Change Theme
               </a>
             </li>
-            <li onClick={() => {}}>
+            <li
+              onClick={() => {
+                state.showLogoutModal = true;
+              }}
+            >
               <a>
                 <span class="i-[mdi--logout-variant] text-[22px]"></span>
                 Logout
