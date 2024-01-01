@@ -2,6 +2,7 @@ import {defineComponent, onMounted, reactive} from 'vue';
 import {useAppStore} from '/@/store';
 import {proxyList as getProxyList} from '/@/apis/account';
 import {addAccount} from '#preload';
+import sensors from '/@/utils/sensors';
 
 export default defineComponent({
   name: 'AddAccount',
@@ -63,6 +64,32 @@ export default defineComponent({
           csid: store.userInfo.sub,
           csemail: store.userInfo.email,
         });
+
+        // sensors add account
+        const currentAccount = store.waAccountList.find(
+          i => i.persistId === store.currentWaAccountPersistId,
+        );
+        if (currentAccount && currentAccount.waAccount) {
+          // record proxy
+          const proxy: Partial<Proxy> = {};
+          if (currentAccount.host && currentAccount.port) {
+            proxy.host = currentAccount.host;
+            proxy.port = currentAccount.port;
+            if (currentAccount.username && currentAccount.password) {
+              proxy.username = currentAccount.username;
+              proxy.password = currentAccount.password;
+            }
+          }
+
+          sensors.track('wa_list_add', {
+            csid: store.userInfo?.sub,
+            cs_email: store.userInfo?.email,
+            country: currentAccount.country,
+            select_agent: proxy,
+            select_app: currentAccount.appPkg,
+            // TODO add_whatsapp
+          });
+        }
 
         store.setLoading(true);
         resetFormItem();

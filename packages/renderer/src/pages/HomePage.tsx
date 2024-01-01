@@ -19,6 +19,7 @@ import Plugin from '/@/components/Plugin';
 import dayjs from 'dayjs';
 import {askAI} from '/@/apis/chat';
 import {useRouter} from 'vue-router';
+import sensors from '/@/utils/sensors';
 
 export default defineComponent({
   setup() {
@@ -71,6 +72,18 @@ export default defineComponent({
                 });
               }
             });
+            if (currentWaAccount && currentWaAccount.waAccount) {
+              sensors.track('send', {
+                csid: store.userInfo?.sub,
+                cs_email: store.userInfo?.email,
+                country: currentWaAccount.country,
+                customer: msg.to,
+                online_service: currentWaAccount.waAccount,
+                online_service_msg: aiRes.data.reply,
+                app_pkg: currentWaAccount.appPkg,
+                isBot: true,
+              });
+            }
           } else {
             store.talkList.forEach(i => {
               if (i.name === msg.from) {
@@ -116,6 +129,19 @@ export default defineComponent({
         store.setWaAccountList(accountList);
         // set current account
         store.setCurrentWaAccountPersistId(accountList[accountList.length - 1].persistId);
+
+        // record wa account list
+        const account_list: string[] = [];
+        store.waAccountList.forEach(i => {
+          if (i.waAccount) {
+            account_list.push(i.waAccount);
+          }
+        });
+        sensors.track('wa_list_account', {
+          csid: store.userInfo?.sub,
+          cs_email: store.userInfo?.email,
+          account_list: account_list.toString(),
+        });
       });
 
       // loading status control with backend
@@ -144,10 +170,13 @@ export default defineComponent({
       // receive message
       listenReceiveMsg(msg => {
         console.log('receive msg---->', msg);
+        const currentWaAccount = store.waAccountList.find(
+          i => i.persistId === store?.currentWaAccountPersistId,
+        );
         store.talkList.forEach(i => {
           if (i.name === msg.from) {
             i.talk.unshift({
-              type: msg.from !== msg.me ? 'receive' : 'send',
+              type: msg.from !== currentWaAccount?.waAccount ? 'receive' : 'send',
               msg: msg.msg,
               timestamp: msg.timestamp,
               to: msg.to,
@@ -155,6 +184,21 @@ export default defineComponent({
             });
           }
         });
+
+        if (currentWaAccount && msg.from !== currentWaAccount?.waAccount) {
+          // sensors record receive
+          sensors.track('receive', {
+            csid: currentWaAccount.csid,
+            cs_email: currentWaAccount.csemail,
+            customer: msg.from,
+            customer_msg: msg.msg,
+            online_service: currentWaAccount.waAccount,
+            app_pkg: currentWaAccount.appPkg,
+            country: currentWaAccount.country,
+            isBot: false,
+          });
+        }
+
         // if on account is robot
         listenRobotMsg(msg);
       });

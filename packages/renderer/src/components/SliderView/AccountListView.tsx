@@ -2,6 +2,7 @@ import {computed, defineComponent, reactive} from 'vue';
 import {useAppStore} from '/@/store';
 import AddAccountModal from '/@/components/AddAccount';
 import {closeInstance, switchAccountWithClient} from '#preload';
+import sensors from '/@/utils/sensors';
 
 export default defineComponent({
   name: 'AccountListView',
@@ -39,6 +40,18 @@ export default defineComponent({
     const deleteAccount = (persistId: string) => {
       store.deleteAccount(persistId);
       closeInstance(persistId);
+      // sensors delete account
+      const currentAccount = store.waAccountList.find(
+        i => i.persistId === store.currentWaAccountPersistId,
+      );
+      if (currentAccount && currentAccount.waAccount) {
+        sensors.track('wa_list_exit', {
+          csid: store.userInfo?.sub,
+          cs_email: store.userInfo?.email,
+          country: currentAccount.country,
+          exit_online_service: currentAccount.waAccount,
+        });
+      }
     };
 
     const switchAccount = () => {

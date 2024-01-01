@@ -2,6 +2,7 @@ import {defineComponent, ref} from 'vue';
 import {useAppStore} from '/@/store';
 import {sendMsgToClient} from '#preload';
 import dayjs from 'dayjs';
+import sensors from '/@/utils/sensors';
 
 export default defineComponent({
   setup() {
@@ -18,6 +19,7 @@ export default defineComponent({
           msg,
           to,
         });
+
         store.talkList.forEach(i => {
           if (i.name === to) {
             i.talk.unshift({
@@ -30,6 +32,23 @@ export default defineComponent({
             });
           }
         });
+
+        // sensors record send msg
+        const currentAccount = store.waAccountList.find(
+          i => i.persistId === store.currentWaAccountPersistId,
+        );
+        if (currentAccount && currentAccount.waAccount) {
+          sensors.track('send', {
+            csid: store.userInfo?.sub,
+            cs_email: store.userInfo?.email,
+            country: currentAccount.country,
+            customer: to,
+            online_service: currentAccount.waAccount,
+            online_service_msg: msg,
+            app_pkg: currentAccount.appPkg,
+            isBot: false,
+          });
+        }
       }
     };
 

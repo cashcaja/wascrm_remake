@@ -44,3 +44,10 @@ interface Talk {
   to: string;
   failed?: boolean;
 }
+
+interface Proxy {
+  host: string;
+  port: number;
+  username?: string;
+  password?: string;
+}
