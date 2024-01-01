@@ -77,7 +77,7 @@ export default defineComponent({
                 csid: store.userInfo?.sub,
                 cs_email: store.userInfo?.email,
                 country: currentWaAccount.country,
-                customer: msg.to,
+                customer: msg.from,
                 online_service: currentWaAccount.waAccount,
                 online_service_msg: aiRes.data.reply,
                 app_pkg: currentWaAccount.appPkg,
