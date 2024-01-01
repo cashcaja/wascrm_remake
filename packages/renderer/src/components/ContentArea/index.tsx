@@ -40,6 +40,7 @@ export default defineComponent({
           };
         });
 
+        console.log('talk list', talkList);
         if (talkList) {
           store.setTalkList(talkList);
         }

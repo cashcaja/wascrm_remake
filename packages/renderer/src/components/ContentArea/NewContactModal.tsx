@@ -33,6 +33,20 @@ export default defineComponent({
         msg: msg.value,
       });
 
+      // push msg to talk list
+      store.talkList.forEach(i => {
+        if (i.name === contact.value) {
+          i.talk.unshift({
+            type: 'send',
+            msg: msg.value,
+            timestamp: Date.now(),
+            to: contact.value,
+            me: store.currentWaAccountPersistId,
+            failed: res.status === 'error',
+          });
+        }
+      });
+
       // reset form
       contact.value = '';
       msg.value = '';

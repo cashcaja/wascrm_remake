@@ -54,7 +54,7 @@ export default defineComponent({
             store?.currentTalk?.length > 0 &&
             store.currentTalk.map(i => (
               <div class={`chat ${i.type === 'send' ? 'chat-end' : 'chat-start'} `}>
-                <div class="chat-header">{i.type === 'send' ? 'You' : i.to}</div>
+                <div class="chat-header">{i.type === 'send' ? 'You' : i.me}</div>
                 <div
                   class={`chat-bubble ${
                     i.type === 'send' ? 'chat-bubble-primary' : 'chat-bubble-success'
