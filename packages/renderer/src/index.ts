@@ -3,7 +3,7 @@ import App from '/@/App.vue';
 import piniaPluginPersistedState from 'pinia-plugin-persistedstate';
 import {createPinia} from 'pinia';
 import router from '/@/router';
-import '/@/index.css';
+import './index.css';
 import 'daisyui/dist/themes.css';
 
 const pinia = createPinia();
