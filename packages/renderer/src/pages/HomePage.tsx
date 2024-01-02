@@ -174,7 +174,7 @@ export default defineComponent({
           i => i.persistId === store?.currentWaAccountPersistId,
         );
         store.talkList.forEach(i => {
-          if (i.name === msg.from) {
+          if (i.name === currentWaAccount?.waAccount) {
             i.talk.unshift({
               type: msg.from !== currentWaAccount?.waAccount ? 'receive' : 'send',
               msg: msg.msg,
@@ -230,7 +230,7 @@ export default defineComponent({
     return () => (
       <div class="flex flex-row m-0 p-0">
         {state.showToast && store.showMessage && (
-          <div class="toast toast-top toast-center">
+          <div class="toast toast-right toast-bottom ">
             {store.showMessage.type === 'error' && (
               <div class="alert alert-error">
                 <span>{store.showMessage.msg}</span>

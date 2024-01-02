@@ -52,6 +52,7 @@ export default defineComponent({
           exit_online_service: currentAccount.waAccount,
         });
       }
+      state.showCancelButton = false;
     };
 
     const switchAccount = () => {
