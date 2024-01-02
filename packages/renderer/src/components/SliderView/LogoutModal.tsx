@@ -1,6 +1,7 @@
 import {defineComponent} from 'vue';
 import {cleanCacheWithClient, openExternal} from '#preload';
 import {useRouter} from 'vue-router';
+import {useAppStore} from '/@/store';
 
 export default defineComponent({
   name: 'CleanCacheModal',
@@ -18,10 +19,11 @@ export default defineComponent({
   },
   setup(props) {
     const router = useRouter();
+    const store = useAppStore();
 
     const logOut = () => {
       cleanCacheWithClient();
-      localStorage.removeItem('app');
+      store.logout();
       openExternal('https://mobene.us.auth0.com/v2/logout');
       props.closeModal();
       router.push('/');
