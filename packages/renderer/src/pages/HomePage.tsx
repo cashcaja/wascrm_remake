@@ -2,16 +2,17 @@ import {defineComponent, onMounted, reactive, watch} from 'vue';
 import {useAppStore} from '/@/store';
 import SliderView from '/@/components/SliderView';
 import {
+  cleanCacheWithClient,
   getAccountList,
   getQrCode,
-  setLoading,
-  openExternal,
-  startup,
-  loginSuccess,
   listenGetChats,
   listenReceiveMsg,
+  loginSuccess,
+  openExternal,
   sendMsgToClient,
-  cleanCacheWithClient,
+  sendNotification,
+  setLoading,
+  startup,
 } from '#preload';
 import QrCodeModal from '/@/components/QrCode';
 import ContentArea from '/@/components/ContentArea';
@@ -173,8 +174,13 @@ export default defineComponent({
         const currentWaAccount = store.waAccountList.find(
           i => i.persistId === store?.currentWaAccountPersistId,
         );
+
+        if (currentWaAccount?.waAccount !== msg.from) {
+          sendNotification({title: 'New Message', body: msg.msg});
+        }
+
         store.talkList.forEach(i => {
-          if (i.name === currentWaAccount?.waAccount) {
+          if (i.name === msg.from) {
             i.talk.unshift({
               type: msg.from !== currentWaAccount?.waAccount ? 'receive' : 'send',
               msg: msg.msg,

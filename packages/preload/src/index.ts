@@ -79,3 +79,7 @@ export const switchAccountWithClient = (persistId: string) => {
 export const cleanCacheWithClient = () => {
   ipcRenderer.send('clean-cache');
 };
+
+export const sendNotification = (params: {title: string; body: string}) => {
+  ipcRenderer.send('send-notification', params);
+};

@@ -1,4 +1,4 @@
-import {type BrowserWindow} from 'electron';
+import {type BrowserWindow, Notification} from 'electron';
 import {randomUUID} from 'node:crypto';
 import {LocalAuth} from 'whatsapp-web.js';
 import WhatsAppWeb from '/@/utils/whatsappClient';
@@ -129,6 +129,11 @@ export const switchAccount = (persistId: string) => {
 
 export const cleanCache = () => {
   return rimraf(join(homeDirectory as string, '.cache/dcs'));
+};
+
+export const sendNotification = (title: string, body: string) => {
+  const notification = new Notification({title, body});
+  notification.show();
 };
 
 export const sleep = (time: number) => {

@@ -5,6 +5,7 @@ import {
   closeInstance,
   distributionMsgWithSend,
   newContact,
+  sendNotification,
   startup,
   switchAccount,
 } from '/@/utils';
@@ -74,6 +75,13 @@ const listenCleanCache = () => {
   });
 };
 
+const listenSendNotificaiont = () => {
+  ipcMain.on('send-notification', (_, params: {title: string; body: string}) => {
+    console.log('received send-notification', params);
+    sendNotification(params.title, params.body);
+  });
+};
+
 export default (window: BrowserWindow) => {
   listenOpenExternal();
   listenAddAccount(window);
@@ -83,4 +91,5 @@ export default (window: BrowserWindow) => {
   listenNewContact();
   listenSwitchAccount();
   listenCleanCache();
+  listenSendNotificaiont();
 };

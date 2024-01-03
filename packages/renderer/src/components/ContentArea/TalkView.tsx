@@ -3,8 +3,10 @@ import {useAppStore} from '/@/store';
 import {sendMsgToClient} from '#preload';
 import dayjs from 'dayjs';
 import sensors from '/@/utils/sensors';
+import MaskView from './MaskView';
 
 export default defineComponent({
+  name: 'TalkView',
   setup() {
     // store
     const store = useAppStore();
@@ -68,7 +70,8 @@ export default defineComponent({
 
     return () => (
       <div class="relative w-[calc(100%-230px)] h-[100vh]">
-        <div class="flex flex-col-reverse h-[90%] overflow-y-scroll">
+        <div class="flex flex-col-reverse h-[92%] overflow-y-scroll">
+          <MaskView />
           {store?.currentTalk &&
             store?.currentTalk?.length > 0 &&
             store.currentTalk.map(i => (
@@ -77,7 +80,7 @@ export default defineComponent({
                 <div
                   class={`chat-bubble ${
                     i.type === 'send' ? 'chat-bubble-primary' : 'chat-bubble-success'
-                  } flex flex-row items-center justify-center `}
+                  } flex flex-row items-center justify-center mr-[15px]`}
                 >
                   {i.msg}
                   {i.type === 'send' && i.failed && (
