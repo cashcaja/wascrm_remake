@@ -138,11 +138,13 @@ export default defineComponent({
             account_list.push(i.waAccount);
           }
         });
-        sensors.track('wa_list_account', {
-          csid: store.userInfo?.sub,
-          cs_email: store.userInfo?.email,
-          account_list: account_list.toString(),
-        });
+        if (account_list.length > 0) {
+          sensors.track('wa_list_account', {
+            csid: store.userInfo?.sub,
+            cs_email: store.userInfo?.email,
+            account_list: account_list.toString(),
+          });
+        }
       });
 
       // loading status control with backend
