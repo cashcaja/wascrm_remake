@@ -37,21 +37,17 @@ export default defineComponent({
       state.showCancelButton = false;
     };
 
-    const deleteAccount = (persistId: string) => {
-      store.deleteAccount(persistId);
-      closeInstance(persistId);
+    const deleteAccount = (item: WaClient) => {
+      store.deleteAccount(item.persistId);
+      closeInstance(item.persistId);
+
       // sensors delete account
-      const currentAccount = store.waAccountList.find(
-        i => i.persistId === store.currentWaAccountPersistId,
-      );
-      if (currentAccount && currentAccount.waAccount) {
-        sensors.track('wa_list_exit', {
-          csid: store.userInfo?.sub,
-          cs_email: store.userInfo?.email,
-          country: currentAccount.country,
-          exit_online_service: currentAccount.waAccount,
-        });
-      }
+      sensors.track('wa_list_exit', {
+        csid: store.userInfo?.sub,
+        cs_email: store.userInfo?.email,
+        country: item.country,
+        exit_online_service: item.waAccount,
+      });
       state.showCancelButton = false;
     };
 
@@ -86,6 +82,7 @@ export default defineComponent({
                 }`}
                 onClick={e => {
                   e.stopPropagation();
+                  console.log('change account', item.persistId);
                   store.setCurrentWaAccountPersistId(item.persistId);
                 }}
               >
@@ -104,7 +101,7 @@ export default defineComponent({
                     class="i-[mdi--close] text-2xl w-[98%] h-[98%] hover:text-red-50"
                     onClick={e => {
                       e.stopPropagation();
-                      deleteAccount(item.persistId);
+                      deleteAccount(item);
                     }}
                   ></span>
                 )}

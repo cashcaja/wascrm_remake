@@ -75,7 +75,10 @@ export const useAppStore = defineStore(
           i.timestamp = Number(i.timestamp) * 1000;
         }
       });
-      chatHistory.value = {[params.persistId]: tempHistory};
+      chatHistory.value = {
+        ...chatHistory.value,
+        [params.persistId]: tempHistory,
+      };
     };
 
     const setTalkList = (list: {timestamp: number; name: string; talk: Talk[]}[]) => {
@@ -141,6 +144,14 @@ export const useAppStore = defineStore(
           aiChatHistory.value.push({
             type: 'robot',
             content: aiRes.data.reply,
+            timestamp: dayjs().valueOf(),
+            lastAsk: params.query,
+          });
+        } else {
+          showMessage.value = {msg: aiRes.msg, type: 'error'};
+          aiChatHistory.value.push({
+            type: 'robot',
+            content: aiRes.msg,
             timestamp: dayjs().valueOf(),
             lastAsk: params.query,
           });

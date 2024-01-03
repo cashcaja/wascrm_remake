@@ -1,4 +1,4 @@
-import {defineComponent, watch, onMounted, KeepAlive} from 'vue';
+import {defineComponent, KeepAlive, onMounted, watch} from 'vue';
 import {useAppStore} from '/@/store';
 import TalkView from '/@/components/ContentArea/TalkView';
 import TalkListView from '/@/components/ContentArea/TalkListView';
@@ -12,7 +12,11 @@ export default defineComponent({
 
     // feat func
     const getTalkList = () => {
-      if (store?.chatHistory?.[store?.currentWaAccountPersistId]) {
+      const currentWaccount = store.waAccountList.find(
+        i => i.persistId === store.currentWaAccountPersistId,
+      );
+
+      if (store?.chatHistory?.[store?.currentWaAccountPersistId] && currentWaccount) {
         const talkList = store.chatHistory[store.currentWaAccountPersistId].map(i => {
           const tempTalk: Talk[] = [];
 
@@ -26,7 +30,7 @@ export default defineComponent({
           // get last message
           if (i?.lastMessage?.id && i?.lastMessage?.body) {
             tempTalk.push({
-              type: i.lastMessage.id.fromMe ? 'send' : 'receive',
+              type: i.id.from !== currentWaccount?.waAccount ? 'receive' : 'send',
               msg: i.lastMessage.body,
               timestamp: i.lastMessage.timestamp,
               to: i.id._serialized, // current service wa account id

@@ -50,6 +50,14 @@ export default defineComponent({
             app_pkg: currentAccount.appPkg,
             isBot: false,
           });
+
+          sensors.track('wa_session', {
+            csid: store.userInfo?.sub,
+            cs_email: store.userInfo?.email,
+            country: currentAccount.country,
+            online_service: currentAccount.waAccount,
+            customer_session_list: store.setCurrentTalk.toString(),
+          });
         }
       }
     };
@@ -71,7 +79,8 @@ export default defineComponent({
     return () => (
       <div class="relative w-[calc(100%-230px)] h-[100vh]">
         <div class="flex flex-col-reverse h-[92%] overflow-y-scroll">
-          <MaskView />
+          {store.waAccountList.find(i => i.persistId === store.currentWaAccountPersistId)
+            ?.isRobot && <MaskView />}
           {store?.currentTalk &&
             store?.currentTalk?.length > 0 &&
             store.currentTalk.map(i => (

@@ -87,7 +87,6 @@ export default defineComponent({
             country: currentAccount.country,
             select_agent: proxy,
             select_app: currentAccount.appPkg,
-            // TODO add_whatsapp
           });
         }
 
