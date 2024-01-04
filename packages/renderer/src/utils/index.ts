@@ -8,3 +8,7 @@ export const copyContent = (content: string) => {
   document.execCommand('copy');
   document.body.removeChild(input);
 };
+
+export const removeSuffix = (str: string) => {
+  return str.replace(/@c.us$/, '');
+};

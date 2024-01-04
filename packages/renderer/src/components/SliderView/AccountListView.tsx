@@ -3,6 +3,7 @@ import {useAppStore} from '/@/store';
 import AddAccountModal from '/@/components/AddAccount';
 import {closeInstance, switchAccountWithClient} from '#preload';
 import sensors from '/@/utils/sensors';
+import {removeSuffix} from '/@/utils';
 
 export default defineComponent({
   name: 'AccountListView',
@@ -46,7 +47,7 @@ export default defineComponent({
         csid: store.userInfo?.sub,
         cs_email: store.userInfo?.email,
         country: item.country,
-        exit_online_service: item.waAccount,
+        exit_online_service: removeSuffix(item.waAccount as string),
       });
       state.showCancelButton = false;
     };

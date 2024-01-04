@@ -21,6 +21,7 @@ import dayjs from 'dayjs';
 import {askAI} from '/@/apis/chat';
 import {useRouter} from 'vue-router';
 import sensors from '/@/utils/sensors';
+import {removeSuffix} from '/@/utils';
 
 export default defineComponent({
   setup() {
@@ -78,7 +79,7 @@ export default defineComponent({
                 cs_email: store.userInfo?.email,
                 country: currentWaAccount.country,
                 customer: msg.from,
-                online_service: currentWaAccount.waAccount,
+                online_service: removeSuffix(currentWaAccount.waAccount),
                 online_service_msg: aiRes.data.reply,
                 app_pkg: currentWaAccount.appPkg,
                 isBot: true,
@@ -132,7 +133,7 @@ export default defineComponent({
         const account_list: string[] = [];
         store.waAccountList.forEach(i => {
           if (i.waAccount) {
-            account_list.push(i.waAccount);
+            account_list.push(removeSuffix(i.waAccount));
           }
         });
         if (account_list.length > 0) {
@@ -196,7 +197,7 @@ export default defineComponent({
             cs_email: currentWaAccount.csemail,
             customer: msg.from,
             customer_msg: msg.msg,
-            online_service: currentWaAccount.waAccount,
+            online_service: removeSuffix(currentWaAccount?.waAccount as string),
             app_pkg: currentWaAccount.appPkg,
             country: currentWaAccount.country,
             isBot: false,

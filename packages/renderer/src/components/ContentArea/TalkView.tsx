@@ -4,6 +4,7 @@ import {sendMsgToClient} from '#preload';
 import dayjs from 'dayjs';
 import sensors from '/@/utils/sensors';
 import MaskView from './MaskView';
+import {removeSuffix} from '/@/utils';
 
 export default defineComponent({
   name: 'TalkView',
@@ -46,7 +47,7 @@ export default defineComponent({
             cs_email: store.userInfo?.email,
             country: currentAccount.value.country,
             customer: to,
-            online_service: currentAccount.value.waAccount,
+            online_service: removeSuffix(currentAccount.value.waAccount),
             online_service_msg: msg,
             app_pkg: currentAccount.value.appPkg,
             isBot: false,
@@ -56,7 +57,7 @@ export default defineComponent({
             csid: store.userInfo?.sub,
             cs_email: store.userInfo?.email,
             country: currentAccount.value.country,
-            online_service: currentAccount.value.waAccount,
+            online_service: removeSuffix(currentAccount.value.waAccount),
             customer_session_list: store.setCurrentTalk.toString(),
           });
         }
