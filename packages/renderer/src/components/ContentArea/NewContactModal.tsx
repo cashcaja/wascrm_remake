@@ -1,4 +1,4 @@
-import {defineComponent, ref} from 'vue';
+import {computed, defineComponent, ref} from 'vue';
 import {useAppStore} from '/@/store';
 import {newContactMsgToClient} from '#preload';
 
@@ -22,6 +22,11 @@ export default defineComponent({
     const contact = ref<string>('');
     const msg = ref<string>('');
 
+    // computed
+    const currentAccount = computed(() =>
+      store.waAccountList.find(i => i.persistId === store.currentWaAccountPersistId),
+    );
+
     const submit = async () => {
       if (!contact.value || !msg.value) {
         store.setShowMessage({msg: 'Please enter contact and message', type: 'error'});
@@ -37,11 +42,10 @@ export default defineComponent({
       store.talkList.forEach(i => {
         if (i.name === contact.value) {
           i.talk.unshift({
-            type: 'send',
             msg: msg.value,
             timestamp: Date.now(),
             to: contact.value,
-            me: store.currentWaAccountPersistId,
+            from: currentAccount.value?.waAccount as string,
             failed: res.status === 'error',
           });
         }

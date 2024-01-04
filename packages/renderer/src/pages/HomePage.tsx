@@ -64,11 +64,10 @@ export default defineComponent({
             store.talkList.forEach(i => {
               if (i.name === msg.from) {
                 i.talk.unshift({
-                  type: 'send',
                   msg: aiRes.data.reply,
                   timestamp: dayjs().valueOf(),
                   to: msg.to,
-                  me: msg.from,
+                  from: msg.from,
                   failed: res.status === 'error',
                 });
               }
@@ -89,11 +88,10 @@ export default defineComponent({
             store.talkList.forEach(i => {
               if (i.name === msg.from) {
                 i.talk.unshift({
-                  type: 'send',
                   msg: 'ai response error',
                   timestamp: dayjs().valueOf(),
                   to: msg.to,
-                  me: msg.from,
+                  from: msg.from,
                   failed: true,
                 });
               }
@@ -104,11 +102,10 @@ export default defineComponent({
           store.talkList.forEach(i => {
             if (i.name === msg.from) {
               i.talk.unshift({
-                type: 'send',
                 msg: 'unknown error',
                 timestamp: dayjs().valueOf(),
                 to: msg.to,
-                me: msg.from,
+                from: msg.from,
                 failed: true,
               });
             }
@@ -184,11 +181,10 @@ export default defineComponent({
         store.talkList.forEach(i => {
           if (i.name === msg.from) {
             i.talk.unshift({
-              type: msg.from !== currentWaAccount?.waAccount ? 'receive' : 'send',
               msg: msg.msg,
               timestamp: msg.timestamp,
               to: msg.to,
-              me: msg.from, // if msg from customer me is custom
+              from: msg.from,
             });
           }
         });

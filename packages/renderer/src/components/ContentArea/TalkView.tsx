@@ -1,4 +1,4 @@
-import {defineComponent, ref} from 'vue';
+import {computed, defineComponent, ref} from 'vue';
 import {useAppStore} from '/@/store';
 import {sendMsgToClient} from '#preload';
 import dayjs from 'dayjs';
@@ -14,6 +14,11 @@ export default defineComponent({
     // state
     const msg = ref<string>('');
 
+    // computed
+    const currentAccount = computed(() =>
+      store.waAccountList.find(i => i.persistId === store.currentWaAccountPersistId),
+    );
+
     const sendMsg = async (msg: string, to: string) => {
       if (store?.currentWaAccountPersistId) {
         const res = await sendMsgToClient({
@@ -25,37 +30,33 @@ export default defineComponent({
         store.talkList.forEach(i => {
           if (i.name === to) {
             i.talk.unshift({
-              type: 'send',
               msg: msg,
               timestamp: dayjs().valueOf(),
               to: to,
-              me: store.currentWaAccountPersistId,
+              from: currentAccount.value?.waAccount as string,
               failed: res.status === 'error',
             });
           }
         });
 
         // sensors record send msg
-        const currentAccount = store.waAccountList.find(
-          i => i.persistId === store.currentWaAccountPersistId,
-        );
-        if (currentAccount && currentAccount.waAccount) {
+        if (currentAccount.value && currentAccount.value.waAccount) {
           sensors.track('send', {
             csid: store.userInfo?.sub,
             cs_email: store.userInfo?.email,
-            country: currentAccount.country,
+            country: currentAccount.value.country,
             customer: to,
-            online_service: currentAccount.waAccount,
+            online_service: currentAccount.value.waAccount,
             online_service_msg: msg,
-            app_pkg: currentAccount.appPkg,
+            app_pkg: currentAccount.value.appPkg,
             isBot: false,
           });
 
           sensors.track('wa_session', {
             csid: store.userInfo?.sub,
             cs_email: store.userInfo?.email,
-            country: currentAccount.country,
-            online_service: currentAccount.waAccount,
+            country: currentAccount.value.country,
+            online_service: currentAccount.value.waAccount,
             customer_session_list: store.setCurrentTalk.toString(),
           });
         }
@@ -84,15 +85,23 @@ export default defineComponent({
           {store?.currentTalk &&
             store?.currentTalk?.length > 0 &&
             store.currentTalk.map(i => (
-              <div class={`chat ${i.type === 'send' ? 'chat-end' : 'chat-start'} `}>
-                <div class="chat-header">{i.type === 'send' ? 'You' : i.me}</div>
+              <div
+                class={`chat ${
+                  currentAccount.value?.waAccount === i.from ? 'chat-end' : 'chat-start'
+                } `}
+              >
+                <div class="chat-header">
+                  {currentAccount.value?.waAccount === i.from ? 'You' : i.to}
+                </div>
                 <div
                   class={`chat-bubble ${
-                    i.type === 'send' ? 'chat-bubble-primary' : 'chat-bubble-success'
+                    currentAccount.value?.waAccount === i.from
+                      ? 'chat-bubble-primary'
+                      : 'chat-bubble-success'
                   } flex flex-row items-center justify-center mr-[15px]`}
                 >
                   {i.msg}
-                  {i.type === 'send' && i.failed && (
+                  {currentAccount.value?.waAccount === i.from && i.failed && (
                     <div
                       class="tooltip flex flex-row items-center"
                       data-tip="click to resend"
@@ -105,20 +114,21 @@ export default defineComponent({
                       />
                     </div>
                   )}
-                  {i.type === 'receive' && (
-                    <div
-                      class="tooltip flex flex-row items-center absolute right-[-50px]"
-                      data-tip="ai reply"
-                    >
-                      <button
-                        class="btn btn-secondary btn-sm"
-                        disabled={store.aiLoading}
-                        onClick={() => sendToAi(i.msg)}
+                  {currentAccount.value?.waAccount === i.to &&
+                    currentAccount.value?.waAccount !== i.from && (
+                      <div
+                        class="tooltip flex flex-row items-center absolute right-[-50px]"
+                        data-tip="ai reply"
                       >
-                        <span class="i-[mdi--star-four-points-outline]" />
-                      </button>
-                    </div>
-                  )}
+                        <button
+                          class="btn btn-secondary btn-sm"
+                          disabled={store.aiLoading}
+                          onClick={() => sendToAi(i.msg)}
+                        >
+                          <span class="i-[mdi--star-four-points-outline]" />
+                        </button>
+                      </div>
+                    )}
                 </div>
                 <div class="chat-footer">
                   <time class="text-xs opacity-60">

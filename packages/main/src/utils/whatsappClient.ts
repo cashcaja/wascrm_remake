@@ -78,7 +78,7 @@ class WhatsAppWeb {
       const img = await this.client.getProfilePicUrl(this.client.info.wid._serialized);
       accountList.forEach(i => {
         if (this.persistId === i.persistId) {
-          i.waAccount = this.client.info.wid.user;
+          i.waAccount = this.client.info.wid._serialized;
           i.img = img;
         }
       });

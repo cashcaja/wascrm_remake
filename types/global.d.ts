@@ -37,10 +37,9 @@ interface UserInfo {
 }
 
 interface Talk {
-  type: string;
   msg: string;
+  from: string;
   timestamp: number;
-  me: string; //  on send me is customer , on receive me is me
   to: string;
   failed?: boolean;
 }
