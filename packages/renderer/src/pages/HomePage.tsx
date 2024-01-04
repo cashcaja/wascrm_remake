@@ -47,7 +47,12 @@ export default defineComponent({
       const currentWaAccount = store.waAccountList.find(
         i => i.persistId === store?.currentWaAccountPersistId,
       );
-      if (msg.from !== msg.me && currentWaAccount?.waAccount && currentWaAccount?.isRobot) {
+      if (
+        msg.fromMe &&
+        msg.from !== msg.to &&
+        currentWaAccount?.waAccount &&
+        currentWaAccount?.isRobot
+      ) {
         try {
           const aiRes: any = await askAI({
             query: msg.msg,
@@ -60,7 +65,7 @@ export default defineComponent({
             const res = await sendMsgToClient({
               persistId: store.currentWaAccountPersistId,
               msg: aiRes.data.reply,
-              to: msg.from,
+              to: msg.to,
             });
             store.talkList.forEach(i => {
               if (i.name === msg.from) {
@@ -69,6 +74,9 @@ export default defineComponent({
                   timestamp: dayjs().valueOf(),
                   to: msg.to,
                   from: msg.from,
+                  fromMe: true,
+                  customer: msg.to,
+                  service: msg.from,
                   failed: res.status === 'error',
                 });
               }
@@ -78,7 +86,7 @@ export default defineComponent({
                 csid: store.userInfo?.sub,
                 cs_email: store.userInfo?.email,
                 country: currentWaAccount.country,
-                customer: msg.from,
+                customer: removeSuffix(msg.to),
                 online_service: removeSuffix(currentWaAccount.waAccount),
                 online_service_msg: aiRes.data.reply,
                 app_pkg: currentWaAccount.appPkg,
@@ -92,7 +100,10 @@ export default defineComponent({
                   msg: 'ai response error',
                   timestamp: dayjs().valueOf(),
                   to: msg.to,
+                  fromMe: true,
                   from: msg.from,
+                  customer: msg.to,
+                  service: msg.from,
                   failed: true,
                 });
               }
@@ -107,6 +118,9 @@ export default defineComponent({
                 timestamp: dayjs().valueOf(),
                 to: msg.to,
                 from: msg.from,
+                fromMe: true,
+                customer: msg.to,
+                service: msg.from,
                 failed: true,
               });
             }
@@ -186,6 +200,9 @@ export default defineComponent({
               timestamp: msg.timestamp,
               to: msg.to,
               from: msg.from,
+              fromMe: msg.fromMe,
+              customer: msg.fromMe ? msg.to : msg.from,
+              service: msg.fromMe ? msg.from : msg.to,
             });
           }
         });

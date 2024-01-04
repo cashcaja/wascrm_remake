@@ -20,7 +20,7 @@ export default defineComponent({
       store.waAccountList.find(i => i.persistId === store.currentWaAccountPersistId),
     );
 
-    const sendMsg = async (msg: string, to: string) => {
+    const sendMsg = async (msg: string, to: string, from: string) => {
       if (store?.currentWaAccountPersistId) {
         const res = await sendMsgToClient({
           persistId: store.currentWaAccountPersistId,
@@ -33,8 +33,11 @@ export default defineComponent({
             i.talk.unshift({
               msg: msg,
               timestamp: dayjs().valueOf(),
-              to: to,
-              from: currentAccount.value?.waAccount as string,
+              to: i.name,
+              from: from,
+              fromMe: true,
+              customer: to,
+              service: from,
               failed: res.status === 'error',
             });
           }
@@ -46,7 +49,7 @@ export default defineComponent({
             csid: store.userInfo?.sub,
             cs_email: store.userInfo?.email,
             country: currentAccount.value.country,
-            customer: to,
+            customer: removeSuffix(to),
             online_service: removeSuffix(currentAccount.value.waAccount),
             online_service_msg: msg,
             app_pkg: currentAccount.value.appPkg,
@@ -81,55 +84,45 @@ export default defineComponent({
     return () => (
       <div class="relative w-[calc(100%-230px)] h-[100vh]">
         <div class="flex flex-col-reverse h-[92%] overflow-y-scroll">
-          {store.waAccountList.find(i => i.persistId === store.currentWaAccountPersistId)
-            ?.isRobot && <MaskView />}
+          {currentAccount.value && currentAccount.value.isRobot == true && <MaskView />}
           {store?.currentTalk &&
             store?.currentTalk?.length > 0 &&
             store.currentTalk.map(i => (
-              <div
-                class={`chat ${
-                  currentAccount.value?.waAccount === i.from ? 'chat-end' : 'chat-start'
-                } `}
-              >
-                <div class="chat-header">
-                  {currentAccount.value?.waAccount === i.from ? 'You' : i.to}
-                </div>
+              <div class={`chat ${i.fromMe ? 'chat-end' : 'chat-start'} `}>
+                <div class="chat-header">{i.fromMe ? 'You' : removeSuffix(i.from)}</div>
                 <div
                   class={`chat-bubble ${
-                    currentAccount.value?.waAccount === i.from
-                      ? 'chat-bubble-primary'
-                      : 'chat-bubble-success'
+                    i.fromMe ? 'chat-bubble-primary' : 'chat-bubble-success'
                   } flex flex-row items-center justify-center mr-[15px]`}
                 >
                   {i.msg}
-                  {currentAccount.value?.waAccount === i.from && i.failed && (
+                  {i.fromMe && i.failed && (
                     <div
-                      class="tooltip flex flex-row items-center"
+                      class="tooltip flex flex-row items-center mr-[15px]"
                       data-tip="click to resend"
                     >
                       <span
                         class="i-[mdi--alert-circle] text-[14px] ml-[10px] hover:bg-secondary"
                         onClick={() => {
-                          sendMsg(i.msg, i.to);
+                          sendMsg(msg.value, i.customer, i.service);
                         }}
                       />
                     </div>
                   )}
-                  {currentAccount.value?.waAccount === i.to &&
-                    currentAccount.value?.waAccount !== i.from && (
-                      <div
-                        class="tooltip flex flex-row items-center absolute right-[-50px]"
-                        data-tip="ai reply"
+                  {!i.fromMe && (
+                    <div
+                      class="tooltip flex flex-row items-center absolute right-[-50px]"
+                      data-tip="ai reply"
+                    >
+                      <button
+                        class="btn btn-secondary btn-sm"
+                        disabled={store.aiLoading}
+                        onClick={() => sendToAi(i.msg)}
                       >
-                        <button
-                          class="btn btn-secondary btn-sm"
-                          disabled={store.aiLoading}
-                          onClick={() => sendToAi(i.msg)}
-                        >
-                          <span class="i-[mdi--star-four-points-outline]" />
-                        </button>
-                      </div>
-                    )}
+                        <span class="i-[mdi--star-four-points-outline]" />
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <div class="chat-footer">
                   <time class="text-xs opacity-60">
@@ -145,7 +138,7 @@ export default defineComponent({
                     class="input input-bordered w-[100%]"
                     onKeyup={e => {
                       if (e.key === 'Enter') {
-                        sendMsg(msg.value, i.to);
+                        sendMsg(msg.value, i.customer, i.service);
                         msg.value = '';
                       }
                     }}
@@ -153,7 +146,7 @@ export default defineComponent({
                   <button
                     class="btn btn-accent w-[100px]"
                     onClick={() => {
-                      sendMsg(msg.value, i.to);
+                      sendMsg(msg.value, i.customer, i.service);
                       msg.value = '';
                     }}
                   >

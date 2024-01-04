@@ -2,6 +2,7 @@ import {computed, defineComponent, ref, watch} from 'vue';
 import {useAppStore} from '/@/store';
 import dayjs from 'dayjs';
 import NewContactModal from '/@/components/ContentArea/NewContactModal';
+import {removeSuffix} from '/@/utils';
 
 export default defineComponent({
   name: 'TalkList',
@@ -52,7 +53,7 @@ export default defineComponent({
                   alt=""
                 />
                 <div class="min-w-0 flex-auto">
-                  <p class="text-sm font-semibold leading-6 ">{i?.name}</p>
+                  <p class="text-sm font-semibold leading-6 ">{removeSuffix(i?.name)}</p>
                   <p class="mt-1 truncate text-xs leading-5 ">
                     {dayjs(i.timestamp).format('YYYY-MM-DD HH:mm')}
                   </p>

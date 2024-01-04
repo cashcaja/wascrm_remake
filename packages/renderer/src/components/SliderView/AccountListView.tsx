@@ -39,23 +39,31 @@ export default defineComponent({
     };
 
     const deleteAccount = (item: WaClient) => {
-      store.deleteAccount(item.persistId);
-      closeInstance(item.persistId);
-
-      // sensors delete account
-      sensors.track('wa_list_exit', {
-        csid: store.userInfo?.sub,
-        cs_email: store.userInfo?.email,
-        country: item.country,
-        exit_online_service: removeSuffix(item.waAccount as string),
-      });
-      state.showCancelButton = false;
+      try {
+        // sensors delete account
+        sensors.track('wa_list_exit', {
+          csid: store.userInfo?.sub,
+          cs_email: store.userInfo?.email,
+          country: item.country,
+          exit_online_service: item.waAccount
+            ? removeSuffix(item.waAccount as string)
+            : item.waAccount,
+        });
+      } catch (e) {
+        console.log('exit error', e);
+      } finally {
+        store.deleteAccount(item.persistId);
+        closeInstance(item.persistId);
+        state.showCancelButton = false;
+      }
     };
 
     const switchAccount = () => {
       store.waAccountList.forEach(item => {
-        item.isRobot = !item.isRobot;
-        item.delete = false;
+        if (item.persistId === store.currentWaAccountPersistId) {
+          item.isRobot = !item.isRobot;
+          item.delete = false;
+        }
       });
       switchAccountWithClient(store.currentWaAccountPersistId);
       state.showCancelButton = false;

@@ -1,7 +1,7 @@
 import {Client} from 'whatsapp-web.js';
 import type {ClientOptions} from 'whatsapp-web.js';
 import {type BrowserWindow} from 'electron';
-import store from '/@/store';
+import {getAccountList, updateAccount} from '/@/utils/db';
 
 class WhatsAppWeb {
   client: Client;
@@ -69,20 +69,24 @@ class WhatsAppWeb {
   };
 
   public async getWaAccount(): Promise<any> {
-    const accountList = store.get('accountList') as WaClient[];
     if (!this.client?.info?.wid) {
       console.log('retry get wa account', this.client?.info?.wid);
       return this.getWaAccount();
     }
     try {
       const img = await this.client.getProfilePicUrl(this.client.info.wid._serialized);
-      accountList.forEach(i => {
-        if (this.persistId === i.persistId) {
-          i.waAccount = this.client.info.wid._serialized;
-          i.img = img;
+      try {
+        if (img || this.client.info.wid?._serialized) {
+          await updateAccount(this.persistId, {
+            img,
+            waAccount: this.client.info.wid._serialized,
+          });
         }
-      });
-      store.set('accountList', accountList);
+      } catch (e) {
+        console.log('update account error', e);
+      }
+      const accountList = await getAccountList();
+      console.log('all account list', accountList);
       this.win.webContents.send('send-accountList', accountList);
     } catch (e) {
       console.log('get wa account error', e);
@@ -118,6 +122,7 @@ class WhatsAppWeb {
         time: message.timestamp,
         to: message.to,
         me: message.fromMe ? message.from : message.to,
+        fromMe: message.fromMe,
       });
     });
   }

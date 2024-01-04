@@ -60,6 +60,12 @@ export const useAppStore = defineStore(
 
     const deleteAccount = (persistId: string) => {
       waAccountList.value = waAccountList.value.filter(i => i.persistId !== persistId);
+      delete chatHistory.value[persistId];
+      if (Object.keys(chatHistory.value).length > 0) {
+        chatHistory.value = {...chatHistory.value};
+      } else {
+        talkList.value = [];
+      }
     };
 
     const setChatsHistory = (params: {history: string; persistId: string}) => {
@@ -81,6 +87,22 @@ export const useAppStore = defineStore(
 
     const setCurrentTalk = (talk: Talk[]) => {
       currentTalk.value = talk;
+    };
+
+    const logout = () => {
+      userInfo.value = undefined;
+      token.value = '';
+      role.value = '';
+      currentWaAccountPersistId.value = '';
+      waAccountList.value = [];
+      chatHistory.value = {};
+      talkList.value = [];
+      currentTalk.value = [];
+      appList.value = [];
+      showMessage.value = undefined;
+      loading.value = false;
+      aiChatHistory.value = [];
+      aiLoading.value = false;
     };
 
     // async function
@@ -215,6 +237,7 @@ export const useAppStore = defineStore(
       deleteAccount,
       getAppList,
       getAIResponse,
+      logout,
     };
   },
   {

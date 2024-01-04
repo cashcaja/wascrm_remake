@@ -37,10 +37,13 @@ interface UserInfo {
 }
 
 interface Talk {
+  customer: string;
+  service: string;
   msg: string;
   from: string;
   timestamp: number;
   to: string;
+  fromMe: boolean;
   failed?: boolean;
 }
 

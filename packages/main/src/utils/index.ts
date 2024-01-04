@@ -2,13 +2,20 @@ import {type BrowserWindow, Notification} from 'electron';
 import {randomUUID} from 'node:crypto';
 import {LocalAuth} from 'whatsapp-web.js';
 import WhatsAppWeb from '/@/utils/whatsappClient';
-import store from '/@/store';
 import {rimraf} from 'rimraf';
 import {join} from 'path';
+import {
+  getAccountList,
+  insertAccount,
+  testConnectWithSqlite,
+  deleteAccount,
+  updateAccount,
+  findAccount,
+} from '/@/utils/db';
 
 const homeDirectory = process.env.HOME || process.env.USERPROFILE;
 const instanceList: WhatsAppWeb[] = [];
-export const addAccount = (win: BrowserWindow, opt: WaClient) => {
+export const addAccount = async (win: BrowserWindow, opt: WaClient, isNew: boolean = true) => {
   console.log('add account', opt);
 
   // 如果是切换状态要把删除状态给清零
@@ -52,46 +59,55 @@ export const addAccount = (win: BrowserWindow, opt: WaClient) => {
     console.log('error---->', e);
   }
 
-  const viewList = store.get('accountList') as WaClient[];
-  const accountListView: WaClient[] = viewList ? viewList : [];
-  accountListView.push({
-    ...opt,
-    persistId: opt.persistId,
-    isRobot: opt.isRobot,
-  });
+  if (isNew) {
+    // insert account
+    await insertAccount([
+      {
+        ...opt,
+        persistId: opt.persistId,
+        isRobot: opt.isRobot,
+      },
+    ]);
+  }
 
   // send all agent to front end
-  store.set('accountList', accountListView);
+  const accountList = await getAccountList();
   // send browser list to renderer process
-  win.webContents.send('send-accountList', accountListView);
+  win.webContents.send('send-accountList', accountList);
 };
 
-export const startup = (win: BrowserWindow) => {
-  const browserList = store.get('accountList') as WaClient[];
-  store.set('accountList', []);
-  if (browserList?.length > 0) {
-    browserList.forEach(i => {
-      addAccount(win, {
-        persistId: i.persistId,
-        appPkg: i.appPkg,
-        country: i.country,
-        csemail: i.csemail,
-        csid: i.csid,
-        isRobot: i.isRobot,
-        img: i.img,
+export const startup = async (win: BrowserWindow) => {
+  try {
+    testConnectWithSqlite();
+    const allAccounts = await getAccountList();
+    if (allAccounts?.length > 0) {
+      allAccounts.forEach(i => {
+        addAccount(
+          win,
+          {
+            persistId: i.persistId,
+            appPkg: i.appPkg,
+            country: i.country,
+            csemail: i.csemail,
+            csid: i.csid,
+            isRobot: i.isRobot,
+            img: i.img,
+          },
+          false,
+        );
       });
-    });
+    }
+  } catch (e) {
+    console.log('startup error', e);
   }
 };
 
-export const closeInstance = (persistId: string) => {
+export const closeInstance = async (persistId: string) => {
   const instance = instanceList.find(i => i.persistId === persistId);
   if (instance) {
     instance.client.destroy();
   }
-  const accountList = store.get('accountList') as WaClient[];
-  const newAccountList = accountList.filter(i => i.persistId !== persistId);
-  store.set('accountList', newAccountList);
+  await deleteAccount(persistId);
 };
 
 export const distributionMsgWithSend = (persisId: string, msg: string, to: string) => {
@@ -110,21 +126,18 @@ export const newContact = (persisId: string, contact: string, msg: string) => {
   }
 };
 
-export const switchAccount = (persistId: string) => {
+export const switchAccount = async (persistId: string) => {
   const instance = instanceList.find(i => i.persistId === persistId);
   if (instance) {
+    // instance is robot status
     instance.switchAccount();
   }
 
-  const accountList = store.get('accountList') as WaClient[];
-  const newAccountList = accountList.map(i => {
-    if (i.persistId === persistId) {
-      i.isRobot = !i.isRobot;
-    }
-    return i;
-  });
-  console.log('update account list', newAccountList);
-  store.set('accountList', newAccountList);
+  // update db
+  const account = await findAccount(persistId);
+  if (account) {
+    await updateAccount(persistId, {isRobot: !account.isRobot});
+  }
 };
 
 export const cleanCache = () => {

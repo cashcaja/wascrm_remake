@@ -36,6 +36,9 @@ export default defineComponent({
               timestamp: Number(i.lastMessage.timestamp) * 1000,
               from: i.lastMessage.from,
               to: i.lastMessage.to,
+              customer: i.id._serialized,
+              service: i.fromMe ? i.lastMessage.from : i.lastMessage.to,
+              fromMe: i.fromMe,
             });
           }
           return {

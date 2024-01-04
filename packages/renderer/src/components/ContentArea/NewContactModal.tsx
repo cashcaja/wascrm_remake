@@ -46,6 +46,9 @@ export default defineComponent({
             timestamp: Date.now(),
             to: contact.value,
             from: currentAccount.value?.waAccount as string,
+            customer: contact.value,
+            service: currentAccount.value?.waAccount as string,
+            fromMe: true,
             failed: res.status === 'error',
           });
         }

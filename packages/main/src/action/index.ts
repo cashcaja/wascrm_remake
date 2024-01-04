@@ -75,7 +75,7 @@ const listenCleanCache = () => {
   });
 };
 
-const listenSendNotificaiont = () => {
+const listenSendNotification = () => {
   ipcMain.on('send-notification', (_, params: {title: string; body: string}) => {
     console.log('received send-notification', params);
     sendNotification(params.title, params.body);
@@ -91,5 +91,5 @@ export default (window: BrowserWindow) => {
   listenNewContact();
   listenSwitchAccount();
   listenCleanCache();
-  listenSendNotificaiont();
+  listenSendNotification();
 };
