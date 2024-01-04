@@ -46,12 +46,6 @@ export const useAppStore = defineStore(
       role.value = info['https://ai-assist-test-us.wuli.cash/roles']?.[0] || '';
     };
 
-    const logout = () => {
-      userInfo.value = undefined;
-      token.value = '';
-      role.value = '';
-    };
-
     const setCurrentWaAccountPersistId = (persistId: string) => {
       currentWaAccountPersistId.value = persistId;
     };
@@ -221,7 +215,6 @@ export const useAppStore = defineStore(
       deleteAccount,
       getAppList,
       getAIResponse,
-      logout,
     };
   },
   {

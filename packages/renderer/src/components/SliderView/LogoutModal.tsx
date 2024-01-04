@@ -19,11 +19,10 @@ export default defineComponent({
   },
   setup(props) {
     const router = useRouter();
-    const store = useAppStore();
 
     const logOut = () => {
       cleanCacheWithClient();
-      store.logout();
+      localStorage.removeItem('app');
       openExternal('https://mobene.us.auth0.com/v2/logout');
       props.closeModal();
       router.push('/');
