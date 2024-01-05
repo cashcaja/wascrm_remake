@@ -252,7 +252,7 @@ export default defineComponent({
     return () => (
       <div class="flex flex-row m-0 p-0">
         {state.showToast && store.showMessage && (
-          <div class="toast toast-right toast-top z-[99]">
+          <div class="toast toast-right toast-top z-50">
             {store.showMessage.type === 'error' && (
               <div class="alert alert-error">
                 <span>{store.showMessage.msg}</span>
