@@ -43,7 +43,7 @@ export default defineComponent({
 
         {state.showSetting && (
           <ul
-            class="menu bg-base-200 w-56 rounded-box absolute bottom-[55px] left-[28px]"
+            class="menu bg-base-200 w-56 rounded-box absolute bottom-[55px] left-[28px] z-[99]"
             onMouseleave={() => (state.showSetting = false)}
           >
             <li

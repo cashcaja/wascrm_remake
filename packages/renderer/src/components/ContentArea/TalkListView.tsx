@@ -35,39 +35,42 @@ export default defineComponent({
             </button>
           </div>
         </div>
-        <div class="flex flex-col justify-start items-start overflow-auto w-[280px] h-[calc(100%-30px)]   menu">
+
+        <div class="flex flex-col justify-start items-start w-[280px] h-[calc(100%-30px)] overflow-y-scroll gap-[2px]">
           {talkList.value.map((i, k) => (
-            <li
+            <div
               key={k}
-              class={'flex w-[100%] p-[5px] gap-[2px]'}
+              class={'w-[100%] p-[5px] cursor-pointer hover:bg-secondary'}
               onClick={() => {
                 if (i?.talk) {
                   store.setCurrentTalk(i.talk);
                 }
               }}
             >
-              <a>
+              <div class="flex flex-row gap-[10px]">
                 <img
                   class="h-12 w-12 flex-none rounded-full bg-gray-50"
                   src="https://api.iconify.design/mdi:account.svg?color=%23888888"
                   alt=""
                 />
-                <div class="min-w-0 flex-auto">
-                  <p class="text-sm font-semibold leading-6 ">{removeSuffix(i?.name)}</p>
+                <div class="min-w-0 ">
+                  <p class="text-sm font-semibold leading-6 text-secondary-content/200">
+                    {removeSuffix(i?.name)}
+                  </p>
                   <p class="mt-1 truncate text-xs leading-5 ">
                     {dayjs(i.timestamp).format('YYYY-MM-DD HH:mm')}
                   </p>
                 </div>
-              </a>
-            </li>
+              </div>
+            </div>
           ))}
-          <NewContactModal
-            showModal={showNewContactModal.value}
-            closeModal={() => {
-              showNewContactModal.value = false;
-            }}
-          />
         </div>
+        <NewContactModal
+          showModal={showNewContactModal.value}
+          closeModal={() => {
+            showNewContactModal.value = false;
+          }}
+        />
       </div>
     );
   },

@@ -76,7 +76,7 @@ export default defineComponent({
         query: msg,
         app_pkg: currentWaAccount.appPkg,
         uid: currentWaAccount.csid,
-        wa_phone: currentWaAccount.waAccount,
+        wa_phone: removeSuffix(currentWaAccount.waAccount),
         timestamp: dayjs().valueOf(),
       });
     };

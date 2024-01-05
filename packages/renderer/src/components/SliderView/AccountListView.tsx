@@ -1,4 +1,4 @@
-import {computed, defineComponent, reactive} from 'vue';
+import {computed, defineComponent, reactive, watch} from 'vue';
 import {useAppStore} from '/@/store';
 import AddAccountModal from '/@/components/AddAccount';
 import {closeInstance, switchAccountWithClient} from '#preload';
@@ -74,7 +74,7 @@ export default defineComponent({
         {waAccountList.value?.length > 0 &&
           waAccountList.value?.map(item => (
             <div class="avatar indicator">
-              {!item?.delete && (
+              {!item?.delete && !state.showCancelButton && (
                 <span
                   class="indicator-item w-[15px] h-[15px] hover:i-[mdi--microsoft-xbox-controller-menu] hover:bg-fuchsia-600 ml-[20px]"
                   onClick={e => {

@@ -61,6 +61,7 @@ export const useAppStore = defineStore(
     const deleteAccount = (persistId: string) => {
       waAccountList.value = waAccountList.value.filter(i => i.persistId !== persistId);
       delete chatHistory.value[persistId];
+      aiChatHistory.value = [];
       if (Object.keys(chatHistory.value).length > 0) {
         chatHistory.value = {...chatHistory.value};
       } else {

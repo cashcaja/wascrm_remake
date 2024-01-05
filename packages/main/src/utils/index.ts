@@ -5,12 +5,12 @@ import WhatsAppWeb from '/@/utils/whatsappClient';
 import {rimraf} from 'rimraf';
 import {join} from 'path';
 import {
+  deleteAccount,
+  findAccount,
   getAccountList,
   insertAccount,
   testConnectWithSqlite,
-  deleteAccount,
   updateAccount,
-  findAccount,
 } from '/@/utils/db';
 
 const homeDirectory = process.env.HOME || process.env.USERPROFILE;
@@ -140,7 +140,11 @@ export const switchAccount = async (persistId: string) => {
   }
 };
 
-export const cleanCache = () => {
+export const cleanCache = async () => {
+  const accountList = await getAccountList();
+  accountList.forEach(i => {
+    deleteAccount(i.persistId);
+  });
   return rimraf(join(homeDirectory as string, '.cache/dcs'));
 };
 

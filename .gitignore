@@ -44,7 +44,7 @@ thumbs.db
  .idea/modules.xml
  .idea/*.iml
  .idea/modules
- .idea/
+ .idea/dataSources.xml
  *.iml
  *.ipr
 
