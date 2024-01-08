@@ -47,8 +47,9 @@ export default defineComponent({
       const currentWaAccount = store.waAccountList.find(
         i => i.persistId === store?.currentWaAccountPersistId,
       );
+      console.log('currentWaAccount', currentWaAccount);
       if (
-        msg.fromMe &&
+        !msg.fromMe &&
         msg.from !== msg.to &&
         currentWaAccount?.waAccount &&
         currentWaAccount?.isRobot
