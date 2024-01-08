@@ -59,7 +59,7 @@ export default defineComponent({
             query: msg.msg,
             app_pkg: currentWaAccount.appPkg,
             uid: currentWaAccount.csid,
-            wa_phone: currentWaAccount.waAccount,
+            wa_phone: removeSuffix(currentWaAccount.waAccount),
           });
 
           if (aiRes.code === 0 && aiRes?.data?.reply) {
