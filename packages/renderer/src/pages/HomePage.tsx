@@ -186,16 +186,14 @@ export default defineComponent({
       // receive message
       listenReceiveMsg(msg => {
         console.log('receive msg---->', msg);
-        const currentWaAccount = store.waAccountList.find(
-          i => i.persistId === store?.currentWaAccountPersistId,
-        );
+        const currentWaAccount = store.waAccountList.find(i => i.waAccount === msg.to);
 
         if (currentWaAccount?.waAccount !== msg.from) {
           sendNotification({title: 'New Message', body: msg.msg});
         }
 
         store.talkList.forEach(i => {
-          if (i.name === msg.from) {
+          if (i.name === msg.from && msg.to === currentWaAccount?.waAccount) {
             i.talk.unshift({
               msg: msg.msg,
               timestamp: msg.timestamp,
