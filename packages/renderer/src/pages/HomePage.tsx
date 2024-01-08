@@ -64,7 +64,7 @@ export default defineComponent({
 
           if (aiRes.code === 0 && aiRes?.data?.reply) {
             const res = await sendMsgToClient({
-              persistId: store.currentWaAccountPersistId,
+              persistId: currentWaAccount.persistId,
               msg: aiRes.data.reply,
               to: msg.to,
             });
