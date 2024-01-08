@@ -21,7 +21,7 @@ export default defineComponent({
     );
 
     return () => (
-      <div class="border-r-[1px] border-gray-700">
+      <div class="border-r-[1px] border-gray-700 h-[100vh]">
         <div class="h-[30px] p-0 m-0 flex flex-row-reverse w-[95%] ">
           <div
             class="tooltip tooltip-bottom"

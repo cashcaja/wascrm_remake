@@ -1,4 +1,4 @@
-import {computed, defineComponent, reactive, watch} from 'vue';
+import {computed, defineComponent, reactive} from 'vue';
 import {useAppStore} from '/@/store';
 import AddAccountModal from '/@/components/AddAccount';
 import {closeInstance, switchAccountWithClient} from '#preload';
@@ -70,7 +70,7 @@ export default defineComponent({
     };
 
     return () => (
-      <div class="relative mt-[20px] flex flex-col justify-center items-center gap-[10px]">
+      <div class="relative mt-[20px] flex flex-col justify-center items-center gap-[10px] ">
         {waAccountList.value?.length > 0 &&
           waAccountList.value?.map(item => (
             <div class="avatar indicator">
