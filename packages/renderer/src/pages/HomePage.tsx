@@ -42,11 +42,7 @@ export default defineComponent({
       showToast: false,
     });
 
-    const listenRobotMsg = async (msg: any) => {
-      // if robot account will auto reply
-      const currentWaAccount = store.waAccountList.find(
-        i => i.persistId === store?.currentWaAccountPersistId,
-      );
+    const listenRobotMsg = async (msg: any, currentWaAccount: any) => {
       console.log('currentWaAccount', currentWaAccount);
       if (
         !msg.fromMe &&
@@ -63,10 +59,11 @@ export default defineComponent({
           });
 
           if (aiRes.code === 0 && aiRes?.data?.reply) {
+            console.log('ai reply to----->', msg.to);
             const res = await sendMsgToClient({
               persistId: currentWaAccount.persistId,
               msg: aiRes.data.reply,
-              to: msg.to,
+              to: msg.from,
             });
             for (const i of Object.keys(store.talkList)) {
               store.talkList[i].forEach(i => {
@@ -74,11 +71,11 @@ export default defineComponent({
                   i.talk.unshift({
                     msg: aiRes.data.reply,
                     timestamp: dayjs().valueOf(),
-                    to: msg.to,
-                    from: msg.from,
+                    to: msg.from,
+                    from: msg.to,
                     fromMe: true,
-                    customer: msg.to,
-                    service: msg.from,
+                    customer: msg.from,
+                    service: msg.to,
                     failed: res.status === 'error',
                   });
                 }
@@ -103,11 +100,11 @@ export default defineComponent({
                   i.talk.unshift({
                     msg: 'ai response error',
                     timestamp: dayjs().valueOf(),
-                    to: msg.to,
+                    to: msg.from,
                     fromMe: true,
-                    from: msg.from,
-                    customer: msg.to,
-                    service: msg.from,
+                    from: msg.to,
+                    customer: msg.from,
+                    service: msg.to,
                     failed: true,
                   });
                 }
@@ -231,7 +228,7 @@ export default defineComponent({
 
         // if on account is robot
         if (currentWaAccount?.isRobot) {
-          listenRobotMsg(msg);
+          listenRobotMsg(msg, currentWaAccount);
         }
       });
     });

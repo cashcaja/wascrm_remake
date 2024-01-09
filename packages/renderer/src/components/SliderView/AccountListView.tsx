@@ -74,15 +74,17 @@ export default defineComponent({
         {waAccountList.value?.length > 0 &&
           waAccountList.value?.map(item => (
             <div class="avatar indicator">
-              {!item?.delete && !state.showCancelButton && (
-                <span
-                  class="indicator-item w-[15px] h-[15px] hover:i-[mdi--microsoft-xbox-controller-menu] hover:bg-fuchsia-600 ml-[20px]"
-                  onClick={e => {
-                    e.stopPropagation();
-                    choiceDelete(item?.persistId);
-                  }}
-                ></span>
-              )}
+              {!item?.delete &&
+                !state.showCancelButton &&
+                item.persistId === store.currentWaAccountPersistId && (
+                  <span
+                    class="indicator-item w-[15px] h-[15px] hover:i-[mdi--microsoft-xbox-controller-menu] hover:bg-fuchsia-600 ml-[20px]"
+                    onClick={e => {
+                      e.stopPropagation();
+                      choiceDelete(item?.persistId);
+                    }}
+                  ></span>
+                )}
               <div
                 class={`w-12 rounded-full hover:ring hover:ring-primary ${
                   item.persistId === store.currentWaAccountPersistId
