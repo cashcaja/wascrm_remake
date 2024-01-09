@@ -68,20 +68,22 @@ export default defineComponent({
               msg: aiRes.data.reply,
               to: msg.to,
             });
-            store.talkList.forEach(i => {
-              if (i.name === msg.from) {
-                i.talk.unshift({
-                  msg: aiRes.data.reply,
-                  timestamp: dayjs().valueOf(),
-                  to: msg.to,
-                  from: msg.from,
-                  fromMe: true,
-                  customer: msg.to,
-                  service: msg.from,
-                  failed: res.status === 'error',
-                });
-              }
-            });
+            for (const i of Object.keys(store.talkList)) {
+              store.talkList[i].forEach(i => {
+                if (i.name === msg.from) {
+                  i.talk.unshift({
+                    msg: aiRes.data.reply,
+                    timestamp: dayjs().valueOf(),
+                    to: msg.to,
+                    from: msg.from,
+                    fromMe: true,
+                    customer: msg.to,
+                    service: msg.from,
+                    failed: res.status === 'error',
+                  });
+                }
+              });
+            }
             if (currentWaAccount && currentWaAccount.waAccount) {
               sensors.track('send', {
                 csid: store.userInfo?.sub,
@@ -95,14 +97,35 @@ export default defineComponent({
               });
             }
           } else {
-            store.talkList.forEach(i => {
+            for (const i of Object.keys(store.talkList)) {
+              store.talkList[i].forEach(i => {
+                if (i.name === msg.from) {
+                  i.talk.unshift({
+                    msg: 'ai response error',
+                    timestamp: dayjs().valueOf(),
+                    to: msg.to,
+                    fromMe: true,
+                    from: msg.from,
+                    customer: msg.to,
+                    service: msg.from,
+                    failed: true,
+                  });
+                }
+              });
+            }
+          }
+        } catch (e) {
+          console.log('error', e);
+
+          for (const i of Object.keys(store.talkList)) {
+            store.talkList[i].forEach(i => {
               if (i.name === msg.from) {
                 i.talk.unshift({
-                  msg: 'ai response error',
+                  msg: 'unknown error',
                   timestamp: dayjs().valueOf(),
                   to: msg.to,
-                  fromMe: true,
                   from: msg.from,
+                  fromMe: true,
                   customer: msg.to,
                   service: msg.from,
                   failed: true,
@@ -110,22 +133,6 @@ export default defineComponent({
               }
             });
           }
-        } catch (e) {
-          console.log('error', e);
-          store.talkList.forEach(i => {
-            if (i.name === msg.from) {
-              i.talk.unshift({
-                msg: 'unknown error',
-                timestamp: dayjs().valueOf(),
-                to: msg.to,
-                from: msg.from,
-                fromMe: true,
-                customer: msg.to,
-                service: msg.from,
-                failed: true,
-              });
-            }
-          });
         }
       }
     };
@@ -191,20 +198,22 @@ export default defineComponent({
         if (currentWaAccount?.waAccount !== msg.from) {
           sendNotification({title: 'New Message', body: msg.msg});
         }
-
-        store.talkList.forEach(i => {
-          if (i.name === msg.from && msg.to === currentWaAccount?.waAccount) {
-            i.talk.unshift({
-              msg: msg.msg,
-              timestamp: msg.timestamp,
-              to: msg.to,
-              from: msg.from,
-              fromMe: msg.fromMe,
-              customer: msg.fromMe ? msg.to : msg.from,
-              service: msg.fromMe ? msg.from : msg.to,
-            });
-          }
-        });
+        if (currentWaAccount && currentWaAccount.persistId) {
+          store.talkList[currentWaAccount.persistId].forEach(i => {
+            if (i.name === msg.from && msg.to === currentWaAccount?.waAccount) {
+              i.new = true;
+              i.talk.unshift({
+                msg: msg.msg,
+                timestamp: msg.timestamp,
+                to: msg.to,
+                from: msg.from,
+                fromMe: msg.fromMe,
+                customer: msg.fromMe ? msg.to : msg.from,
+                service: msg.fromMe ? msg.from : msg.to,
+              });
+            }
+          });
+        }
 
         if (currentWaAccount && msg.from !== currentWaAccount?.waAccount) {
           // sensors record receive
@@ -221,7 +230,9 @@ export default defineComponent({
         }
 
         // if on account is robot
-        listenRobotMsg(msg);
+        if (currentWaAccount?.isRobot) {
+          listenRobotMsg(msg);
+        }
       });
     });
 

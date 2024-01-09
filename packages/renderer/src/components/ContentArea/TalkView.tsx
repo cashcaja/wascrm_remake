@@ -3,7 +3,6 @@ import {useAppStore} from '/@/store';
 import {sendMsgToClient} from '#preload';
 import dayjs from 'dayjs';
 import sensors from '/@/utils/sensors';
-import MaskView from './MaskView';
 import {removeSuffix} from '/@/utils';
 
 export default defineComponent({
@@ -28,20 +27,22 @@ export default defineComponent({
           to,
         });
 
-        store.talkList.forEach(i => {
-          if (i.name === to) {
-            i.talk.unshift({
-              msg: msg,
-              timestamp: dayjs().valueOf(),
-              to: i.name,
-              from: from,
-              fromMe: true,
-              customer: to,
-              service: from,
-              failed: res.status === 'error',
-            });
-          }
-        });
+        for (const i of Object.keys(store.talkList)) {
+          store.talkList[i].forEach(i => {
+            if (i.name === to) {
+              i.talk.unshift({
+                msg: msg,
+                timestamp: dayjs().valueOf(),
+                to: i.name,
+                from: from,
+                fromMe: true,
+                customer: to,
+                service: from,
+                failed: res.status === 'error',
+              });
+            }
+          });
+        }
 
         // sensors record send msg
         if (currentAccount.value && currentAccount.value.waAccount) {
@@ -84,7 +85,6 @@ export default defineComponent({
     return () => (
       <div class="relative w-[calc(100%-230px)] h-[100vh]">
         <div class="flex flex-col-reverse h-[92%] overflow-y-scroll">
-          {currentAccount.value && currentAccount.value.isRobot == true && <MaskView />}
           {store?.currentTalk &&
             store?.currentTalk?.length > 0 &&
             store.currentTalk.map(i => (

@@ -96,14 +96,19 @@ export default defineComponent({
                 }}
               >
                 {!item.delete ? (
-                  <img
-                    src={
-                      item.img
-                        ? item.img
-                        : 'https://api.iconify.design/mdi:account.svg?color=%23888888'
-                    }
-                    alt=""
-                  />
+                  <div class="relative">
+                    {!!item?.isRobot && (
+                      <div class="text-[25px] font-bold absolute right-[10px] top-[5px]">AI</div>
+                    )}
+                    <img
+                      src={
+                        item.img
+                          ? item.img
+                          : 'https://api.iconify.design/mdi:account.svg?color=%23888888'
+                      }
+                      alt=""
+                    />
+                  </div>
                 ) : (
                   <span
                     v-else

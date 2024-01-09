@@ -1,4 +1,4 @@
-import {computed, defineComponent, KeepAlive, onMounted, watch} from 'vue';
+import {computed, defineComponent, onMounted, watch} from 'vue';
 import {useAppStore} from '/@/store';
 import TalkView from '/@/components/ContentArea/TalkView';
 import TalkListView from '/@/components/ContentArea/TalkListView';
@@ -17,15 +17,21 @@ export default defineComponent({
 
     // feat func
     const getTalkList = () => {
-      console.log(store?.chatHistory?.[store?.currentWaAccountPersistId]);
+      console.log('all chats', store?.chatHistory?.[store?.currentWaAccountPersistId]);
+      console.log('chat history', store?.talkList?.[store?.currentWaAccountPersistId]);
       if (store?.chatHistory?.[store?.currentWaAccountPersistId] && currentWaAccount) {
-        const talkList = store.chatHistory[store.currentWaAccountPersistId].map(i => {
-          const tempTalk: Talk[] = [];
+        const talkList: {
+          [key: string]: {timestamp: number; persistId: string; name: string; talk: Talk[]}[];
+        } = {};
 
+        const tempTalkList = store.chatHistory[store.currentWaAccountPersistId].map(i => {
+          const tempTalk: Talk[] = [];
           // exclude have history talk
-          for (const j of store.talkList) {
-            if (j.name === i.id?._serialized) {
-              return j;
+          if (store.talkList?.[store.currentWaAccountPersistId]) {
+            for (const j of store.talkList[store.currentWaAccountPersistId]) {
+              if (j.name === i.id?._serialized && j.persistId === store.currentWaAccountPersistId) {
+                return j;
+              }
             }
           }
 
@@ -44,19 +50,22 @@ export default defineComponent({
           return {
             name: i.id._serialized, // talk index name
             timestamp: i?.timestamp ? i?.timestamp : dayjs().valueOf(),
+            persistId: store.currentWaAccountPersistId,
             talk: tempTalk,
           };
         });
+        talkList[store.currentWaAccountPersistId] = tempTalkList;
 
-        console.log('talk list', talkList);
-        if (talkList) {
-          store.setTalkList(talkList);
+        if (talkList && store.currentWaAccountPersistId) {
+          store.setTalkList({
+            ...store.talkList,
+            ...talkList,
+          });
         }
       }
     };
 
     onMounted(() => {
-      console.log('all chats', store.chatHistory);
       getTalkList();
     });
 
@@ -69,10 +78,8 @@ export default defineComponent({
 
     return () => (
       <div class="flex flex-row m-0 p-0">
-        <KeepAlive>
-          <TalkListView />
-          <TalkView />
-        </KeepAlive>
+        <TalkListView />
+        <TalkView />
       </div>
     );
   },

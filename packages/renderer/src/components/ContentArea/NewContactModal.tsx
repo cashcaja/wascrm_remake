@@ -39,7 +39,7 @@ export default defineComponent({
       });
 
       // push msg to talk list
-      store.talkList.forEach(i => {
+      store.talkList[store.currentWaAccountPersistId].forEach(i => {
         if (i.name === contact.value) {
           i.talk.unshift({
             msg: msg.value,

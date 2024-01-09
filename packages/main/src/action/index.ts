@@ -70,8 +70,8 @@ const listenSwitchAccount = () => {
 };
 
 const listenCleanCache = () => {
-  ipcMain.on('clean-cache', async () => {
-    await cleanCache();
+  ipcMain.on('clean-cache', () => {
+    cleanCache();
   });
 };
 

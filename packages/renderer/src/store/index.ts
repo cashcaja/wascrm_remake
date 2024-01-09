@@ -17,7 +17,15 @@ export const useAppStore = defineStore(
 
     // talk history
     const chatHistory = ref<{[key: string]: any[]}>({});
-    const talkList = ref<{name: string; timestamp: number; talk: Talk[]}[]>([]);
+    const talkList = ref<{
+      [key: string]: {
+        name: string;
+        persistId: string;
+        timestamp: number;
+        new?: boolean;
+        talk: Talk[];
+      }[];
+    }>({});
     const currentTalk = ref<Talk[]>();
 
     // req data
@@ -65,7 +73,7 @@ export const useAppStore = defineStore(
       if (Object.keys(chatHistory.value).length > 0) {
         chatHistory.value = {...chatHistory.value};
       } else {
-        talkList.value = [];
+        talkList.value = {};
       }
     };
 
@@ -82,7 +90,9 @@ export const useAppStore = defineStore(
       };
     };
 
-    const setTalkList = (list: {timestamp: number; name: string; talk: Talk[]}[]) => {
+    const setTalkList = (list: {
+      [key: string]: {timestamp: number; persistId: string; name: string; talk: Talk[]}[];
+    }) => {
       talkList.value = list;
     };
 
@@ -97,7 +107,7 @@ export const useAppStore = defineStore(
       currentWaAccountPersistId.value = '';
       waAccountList.value = [];
       chatHistory.value = {};
-      talkList.value = [];
+      talkList.value = {};
       currentTalk.value = [];
       appList.value = [];
       showMessage.value = undefined;

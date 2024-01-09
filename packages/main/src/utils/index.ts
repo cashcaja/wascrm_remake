@@ -147,8 +147,10 @@ export const cleanCache = async () => {
   });
   instanceList.forEach(i => {
     i?.client?.destroy();
+    console.log('destroy client', i?.client);
   });
-  return rimraf(join(homeDirectory as string, '.cache/dcs'));
+  rimraf(join(homeDirectory as string, '.cache/dcs/store'));
+  rimraf(join(homeDirectory as string, '.cache/dcs/auth_data'));
 };
 
 export const sendNotification = (title: string, body: string) => {
