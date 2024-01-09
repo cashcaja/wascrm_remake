@@ -1,8 +1,9 @@
-import {defineComponent, onMounted, reactive, watch} from 'vue';
+import {defineComponent, onBeforeUnmount, onMounted, onUnmounted, reactive, watch} from 'vue';
 import {useAppStore} from '/@/store';
 import SliderView from '/@/components/SliderView';
 import {
   cleanCacheWithClient,
+  cleanListener,
   getAccountList,
   getQrCode,
   listenGetChats,
@@ -65,22 +66,20 @@ export default defineComponent({
               msg: aiRes.data.reply,
               to: msg.from,
             });
-            for (const i of Object.keys(store.talkList)) {
-              store.talkList[i].forEach(i => {
-                if (i.name === msg.from) {
-                  i.talk.unshift({
-                    msg: aiRes.data.reply,
-                    timestamp: dayjs().valueOf(),
-                    to: msg.from,
-                    from: msg.to,
-                    fromMe: true,
-                    customer: msg.from,
-                    service: msg.to,
-                    failed: res.status === 'error',
-                  });
-                }
-              });
-            }
+            store.talkList[currentWaAccount.persistId].forEach(i => {
+              if (i.name === msg.from) {
+                i.talk.unshift({
+                  msg: aiRes.data.reply,
+                  timestamp: dayjs().valueOf(),
+                  to: msg.from,
+                  from: msg.to,
+                  fromMe: true,
+                  customer: msg.from,
+                  service: msg.to,
+                  failed: res.status === 'error',
+                });
+              }
+            });
             if (currentWaAccount && currentWaAccount.waAccount) {
               sensors.track('send', {
                 csid: store.userInfo?.sub,
@@ -255,6 +254,10 @@ export default defineComponent({
         }, 3000);
       },
     );
+
+    onBeforeUnmount(() => {
+      cleanListener();
+    });
 
     return () => (
       <div class="flex flex-row m-0 p-0">

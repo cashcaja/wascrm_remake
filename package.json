@@ -1,7 +1,7 @@
 {
   "name": "dcs-ai-client",
   "description": "dcs ai client",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "private": true,
   "author": {
     "email": "moca_tao7@foxmail.com",

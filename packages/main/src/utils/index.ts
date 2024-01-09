@@ -145,10 +145,9 @@ export const cleanCache = async () => {
   accountList.forEach(i => {
     deleteAccount(i.persistId);
   });
-  instanceList.forEach(i => {
-    i?.client?.destroy();
-    console.log('destroy client', i?.client);
-  });
+  for (const i of instanceList) {
+    await i?.client?.destroy();
+  }
   rimraf(join(homeDirectory as string, '.cache/dcs/store'));
   rimraf(join(homeDirectory as string, '.cache/dcs/auth_data'));
 };

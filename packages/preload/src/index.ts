@@ -83,3 +83,24 @@ export const cleanCacheWithClient = () => {
 export const sendNotification = (params: {title: string; body: string}) => {
   ipcRenderer.send('send-notification', params);
 };
+
+// utils remove all listener
+
+export const cleanListener = () => {
+  ipcRenderer.removeAllListeners('save-user-info-to-front');
+  ipcRenderer.removeAllListeners('open-external');
+  ipcRenderer.removeAllListeners('send-accountList');
+  ipcRenderer.removeAllListeners('send-qr-code');
+  ipcRenderer.removeAllListeners('add-account');
+  ipcRenderer.removeAllListeners('restore-account');
+  ipcRenderer.removeAllListeners('login-success');
+  ipcRenderer.removeAllListeners('set-loading');
+  ipcRenderer.removeAllListeners('close-instance');
+  ipcRenderer.removeAllListeners('send-talk-history');
+  ipcRenderer.removeAllListeners('send-msg-to-client');
+  ipcRenderer.removeAllListeners('new-contact');
+  ipcRenderer.removeAllListeners('received-msg-from-client');
+  ipcRenderer.removeAllListeners('switch-account');
+  ipcRenderer.removeAllListeners('clean-cache');
+  ipcRenderer.removeAllListeners('send-notification');
+};
